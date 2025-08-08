@@ -123,30 +123,32 @@ function renderProduct() {
     ? `<div class="product-price">Preço: <span>${p.price}</span></div>`
     : "";
 
-  let buySection = "";
+  // LINHA DE CTAs ALINHADOS NO FINAL
+  let ctasRow = "";
   if (p.slug === "mentoria") {
-    buySection = `
-      <div class="flex flex-col md:flex-row gap-3">
+    ctasRow = `
+      <div class="flex flex-col md:flex-row flex-wrap gap-3">
         <a class="btn-primary glow-btn w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Contratar agora</a>
-        <a class="btn-outline w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Falar no WhatsApp</a>
+        <a class="btn-outline w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
       </div>
     `;
   } else {
     const sampleBtn = p.sample
       ? `<a class="btn-primary glow-btn w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
       : "";
-    buySection = `
-      <div class="flex flex-col md:flex-row gap-3">
+    ctasRow = `
+      <div class="flex flex-col md:flex-row flex-wrap gap-3">
         <a class="btn-primary glow-btn w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
         ${sampleBtn}
+        <a class="btn-outline w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
       </div>
     `;
   }
 
-  const auxBtns = `
-    <div class="flex flex-col md:flex-row gap-3">
+  // Botão "Voltar" separado (fica simples e acessível)
+  const backRow = `
+    <div class="mt-3">
       <a class="btn-ghost" href="index.html">Voltar</a>
-      <a class="btn-outline" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
     </div>
   `;
 
@@ -155,9 +157,9 @@ function renderProduct() {
     <div class="mt-8 space-y-6 glass-section section-gradient product-copy">
       ${copyHtml}
       ${priceHtml}
-      <div class="mt-4 flex flex-col gap-3">
-        ${buySection}
-        ${auxBtns}
+      <div class="mt-4">
+        ${ctasRow}
+        ${backRow}
       </div>
     </div>
   `;
