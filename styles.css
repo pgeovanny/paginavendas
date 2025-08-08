@@ -14,6 +14,7 @@ body{
   line-height: 1.7;
   letter-spacing: .2px;
   color: var(--text-base);
+  text-rendering: optimizeLegibility;
 }
 
 /* Títulos globais */
@@ -22,11 +23,13 @@ body{
   font-size: clamp(2rem, 3.2vw + 1rem, 3.25rem);
   line-height: 1.15;
   color: var(--text-strong);
+  text-wrap: balance;
 }
 .section-title{
   font-weight: 800;
   font-size: clamp(1.4rem, 1.2vw + 1rem, 2rem);
   color: var(--text-strong);
+  text-wrap: balance;
 }
 .section-text{
   font-size: clamp(1rem, .4vw + .95rem, 1.1rem);
@@ -34,8 +37,7 @@ body{
 }
 
 /* ---------------------------
-   GRADIENTES GERAIS (premium: azul + roxo + dourado leve)
-   — suavizados atrás de blocos de texto para não competir
+   GRADIENTES GERAIS + VIGNETTE (impacto sem perder legibilidade)
 ---------------------------- */
 .page-gradient{
   position: relative;
@@ -46,23 +48,25 @@ body{
   content:"";
   position: fixed; inset:0; pointer-events:none; z-index: -2;
   background:
-    radial-gradient(70% 60% at 15% 8%, rgba(76,108,210,.28), rgba(76,108,210,0) 60%), /* azul */
-    radial-gradient(55% 50% at 85% 18%, rgba(128,96,220,.18), rgba(128,96,220,0) 65%), /* roxo */
-    radial-gradient(50% 45% at 50% 85%, rgba(210,175,95,.08), rgba(210,175,95,0) 65%);  /* dourado leve */
+    radial-gradient(70% 60% at 15% 8%, rgba(76,108,210,.30), rgba(76,108,210,0) 60%), /* azul */
+    radial-gradient(55% 50% at 85% 18%, rgba(128,96,220,.20), rgba(128,96,220,0) 65%), /* roxo */
+    radial-gradient(50% 45% at 50% 85%, rgba(210,175,95,.10), rgba(210,175,95,0) 65%);  /* dourado leve */
   filter: blur(14px);
 }
 .page-gradient::after{
-  /* textura sutil, quase imperceptível */
+  /* textura + vignette sutil para profundidade */
   content:"";
-  position: fixed; inset:0; pointer-events:none; z-index:-1; opacity:.05;
+  position: fixed; inset:0; pointer-events:none; z-index:-1; 
   background:
+    radial-gradient(80% 80% at 50% 50%, rgba(0,0,0,.18), rgba(0,0,0,0) 60%),
     linear-gradient(120deg, rgba(255,255,255,.25) 0.5px, transparent 0.5px),
     linear-gradient(300deg, rgba(255,255,255,.22) 0.5px, transparent 0.5px);
-  background-size: 22px 22px, 28px 28px;
-  mix-blend-mode: overlay;
+  background-size: 100% 100%, 22px 22px, 28px 28px;
+  mix-blend-mode: normal;
+  opacity:.10;
 }
 
-/* As seções “glass” já seguram o contraste; só um toque de gradiente leve */
+/* Seções “glass”: leve gradiente ao fundo */
 .section-gradient{ position: relative; }
 .section-gradient::before{
   content:""; position:absolute; inset:0; pointer-events:none;
@@ -198,21 +202,31 @@ body{
 }
 
 /* ---------------------------
-   CONTEÚDO DOS PRODUTOS (maior e legível)
+   CONTEÚDO DOS PRODUTOS (justificado e maior)
 ---------------------------- */
 .product-title{
   font-weight: 800;
   font-size: clamp(1.75rem, 1.6vw + 1.2rem, 2.2rem);
   color: var(--text-strong);
+  text-wrap: balance;
 }
 .product-subtitle{
   margin-top:.45rem;
   font-size: clamp(1.05rem, .6vw + .95rem, 1.2rem);
   color: var(--text-base);
+  text-wrap: balance;
+}
+.product-copy{
+  text-align: justify;
+  text-justify: inter-word;
 }
 .product-copy p{
   font-size: clamp(1.05rem, .6vw + .9rem, 1.2rem);
   color: var(--text-base);
+  hyphens: auto;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  margin: .55rem 0;
 }
 .product-price{
   margin-top:.8rem; font-weight: 700; font-size: clamp(1.05rem, .6vw + .95rem, 1.25rem);
