@@ -13,7 +13,7 @@ const CHECKOUT = {
   mentoria_sem_material_trimestral: "https://seu-checkout.com/mentoria-sem-material-trimestral"
 };
 
-// Links de amostra (Google Drive ou similar) – ajuste depois
+// Links de amostra – ajuste depois
 const SAMPLES = {
   manual: "https://drive.google.com/SEU-LINK-AMOSTRA-MANUAL",
   legislacao: "https://drive.google.com/SEU-LINK-AMOSTRA-LEGISLACAO"
@@ -52,7 +52,7 @@ const PRODUCTS = {
       "Pensando nisso, desenvolvemos o material Legislação Interna TJ-SP 2025, em formato PDF, organizado e visualmente acessível que reúne toda a legislação cobrada no edital de forma didática e prática.",
       "Aqui, você não vai perder tempo vasculhando textos longos e difíceis de entender: preparamos tabelas explicativas que destacam exatamente o que você precisa saber — prazos, quóruns, composições e competências — tudo organizado para facilitar seu aprendizado e memorização.",
       "Além disso, incluímos questões inéditas que foram cuidadosamente selecionadas para testar seu conhecimento e garantir que você esteja preparado para os tipos de perguntas que vão aparecer na prova.",
-      "Este material é essencial para você que quer acertar o máximo em Legislação. Estude com foco, domine o que realmente cai no  e aumente suas chances de aprovação "
+      "Este material é essencial para você que quer acertar o máximo em Legislação. Estude com foco, domine o que realmente cai no edital e aumente suas chances de aprovação."
     ],
     checkout: CHECKOUT.legislacao,
     hasMentoriaFlow: false
@@ -97,21 +97,17 @@ function renderProduct() {
     return;
   }
 
-  // WhatsApp float link
   if (wa) wa.href = WA_LINK;
 
   const p = PRODUCTS[slug];
 
-  // Cabeçalho do produto (com “glass card” + neon outline)
   const head = `
     <div class="grid md:grid-cols-2 gap-6 md:gap-10 items-start">
-      <div class="glass-card neon-outline rounded-2xl overflow-hidden">
+      <div class="glass-card neon-outline rounded-2xl overflow-hidden card-gradient">
         <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
       </div>
-      <div class="glass-panel">
-        <h1 class="text-3xl md:text-4xl font-extrabold text-blue-50">
-          ${p.title}
-        </h1>
+      <div class="glass-panel panel-gradient">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-blue-50">${p.title}</h1>
         <p class="mt-2 text-blue-50/92">${p.subtitle}</p>
         <div class="mt-3 inline-flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 ring-1 ring-white/10 soft-shadow">
           <span class="text-sm text-blue-50/90">Compra garantida • Entrega imediata</span>
@@ -120,10 +116,8 @@ function renderProduct() {
     </div>
   `;
 
-  // Texto (alto contraste)
   const copyHtml = p.copy.map(par => `<p class="leading-relaxed text-blue-50/95">${par}</p>`).join("");
 
-  // Seção de compra
   let buySection = "";
   if (p.hasMentoriaFlow) {
     buySection = `
@@ -180,7 +174,6 @@ function renderProduct() {
     `;
   }
 
-  // Dúvidas + Voltar
   const auxBtns = `
     <div class="flex flex-col md:flex-row gap-3">
       <a class="btn-ghost" href="index.html">Voltar</a>
@@ -188,10 +181,9 @@ function renderProduct() {
     </div>
   `;
 
-  // Render final com “section panel”
   const html = `
     ${head}
-    <div class="mt-8 space-y-6 glass-section">
+    <div class="mt-8 space-y-6 glass-section section-gradient">
       ${copyHtml}
       <div class="text-lg font-semibold mt-4 text-blue-50">Preço: <span class="text-blue-50/95">${p.price}</span></div>
       <div class="mt-4 flex flex-col gap-3">
