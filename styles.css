@@ -76,32 +76,45 @@ body{
 .glow-top{ box-shadow: 0 12px 60px rgba(16,38,83,.55); }
 
 /* ACCORDION LIST (Home) */
-.energy-wrap{
-  position: relative; border-radius: 1.1rem; padding: 2px; /* espaço pro anel */
-}
-.energy-wrap::before{
-  content:""; position:absolute; inset:-2px; border-radius:1.2rem; z-index:-1;
-  background:
-    conic-gradient(from 0deg,
-      rgba(99,102,241,.0),
-      rgba(99,102,241,.65),
-      rgba(56,189,248,.65),
-      rgba(59,130,246,.65),
-      rgba(99,102,241,.65),
-      rgba(99,102,241,.0) 85%);
-  filter: blur(8px); opacity:.9;
-  animation: energySpin 6s linear infinite;
-}
-@keyframes energySpin{ to { transform: rotate(360deg); } }
-
 .acc-item{ border-radius: 1rem; background: transparent; }
+
 .acc-trigger{
+  position: relative; isolation:isolate; /* garante layers do pseudo */
   width:100%; display:flex; align-items:center; justify-content:space-between; gap:.75rem;
   padding: .9rem 1rem; border-radius: .9rem; background: rgba(0,0,0,.18);
   border: 1px solid rgba(173,197,255,.18); transition: .2s ease;
+  overflow:hidden; /* corta o anel dentro da borda */
 }
 .acc-trigger:hover{ background: rgba(255,255,255,.06); }
 .acc-trigger.open{ border-color: rgba(173,197,255,.34); box-shadow: 0 18px 40px rgba(0,0,0,.45), 0 0 28px rgba(100,150,255,.22); }
+
+/* ANEL DE ENERGIA GIRANDO EM CADA BOTÃO */
+.ring-energy::before{
+  content:""; position:absolute; inset:-2px; border-radius: inherit; pointer-events:none; z-index:0;
+  background: conic-gradient(from 0deg,
+    rgba(99,102,241,0) 0deg,
+    rgba(99,102,241,.75) 60deg,
+    rgba(56,189,248,.75) 160deg,
+    rgba(59,130,246,.75) 240deg,
+    rgba(99,102,241,.75) 300deg,
+    rgba(99,102,241,0) 360deg);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; /* Safari/Chromium */
+  mask-composite: exclude;       /* Firefox */
+  padding:2px;                   /* espessura do anel */
+  animation: energySpin 5.5s linear infinite;
+  opacity:.95;
+}
+.ring-energy::after{
+  /* leve brilho interno para dar profundidade */
+  content:""; position:absolute; inset:0; border-radius: inherit; z-index:0;
+  box-shadow: inset 0 0 18px rgba(120,170,255,.15);
+}
+
+@keyframes energySpin{ to { transform: rotate(360deg); } }
+
 .acc-title{ font-weight:800; color: var(--text-strong); font-size: clamp(1.05rem, .6vw + 1rem, 1.25rem);}
 .acc-sub{ color: var(--text-dim); font-size: .95rem; }
 .acc-icon{
@@ -111,6 +124,7 @@ body{
 .acc-icon span{ width:.6rem;height:.6rem;background:#22c55e;border-radius:999px;box-shadow:0 0 12px rgba(34,197,94,.7);}
 .acc-chevron{ width:22px;height:22px; fill:#cfe0ff; opacity:.8; transition: transform .2s ease;}
 .acc-trigger.open .acc-chevron{ transform: rotate(180deg); }
+
 .acc-panel{
   max-height:0; overflow:hidden; transition:max-height .3s ease, opacity .3s ease;
   opacity:.0; padding:0 .25rem;
@@ -150,7 +164,7 @@ body{
 }
 
 /* Botões */
-.btn-primary, .btn-secondary, .btn-outline, .btn-ghost{
+.btn-primary, .btn-outline, .btn-ghost{
   display:inline-flex;align-items:center;justify-content:center;
   padding: clamp(.9rem, .8vw + .6rem, 1rem) clamp(1.1rem, 1.2vw + .6rem, 1.3rem);
   border-radius:1rem;font-weight:800; border:1px solid transparent;text-decoration:none;
@@ -166,7 +180,6 @@ body{
 .btn-outline:hover{background:rgba(255,255,255,.08); transform: translateY(-1px);}
 .btn-ghost{ background:transparent;color:#dfe7ff;border-color:transparent }
 .btn-ghost:hover{background:rgba(255,255,255,.06)}
-.glow-btn{ position:relative; }
 .glow-btn::after{
   content:""; position:absolute; inset:-2px; border-radius:1.05rem;
   box-shadow: 0 0 0 0 rgba(120,170,255,.0);
