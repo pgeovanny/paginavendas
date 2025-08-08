@@ -1,6 +1,6 @@
 /* ===== CONFIGURAÇÕES GERAIS ===== */
 const WHATSAPP_NUMBER = "5599999999999"; // DDI+DDD+número
-const WHATSAPP_MSG = encodeURIComponent("Olá! Tenho dúvidas sobre o produto.");
+const WHATSAPP_MSG = encodeURIComponent("Olá! Tenho dúvidas sobre a Mentoria / Quero contratar agora.");
 const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
 
 // Links de checkout (troque pelos reais)
@@ -61,7 +61,7 @@ const PRODUCTS = {
     slug: "mentoria",
     title: "Mentoria",
     subtitle: "Mentoria personalizada para planejar e acelerar sua aprovação.",
-    price: "A partir de R$ 149,00/mês",
+    price: null, // sem preço
     img: "assets/mentoria.jpg",
     sample: null,
     copy: [
@@ -74,7 +74,7 @@ const PRODUCTS = {
       "Se você quer deixar de estudar sem rumo, a Mentoria é sua solução para acelerar sua preparação com foco e estratégia."
     ],
     checkout: null,
-    hasMentoriaFlow: true
+    hasMentoriaFlow: false // desativa o fluxo antigo, agora é "Contratar agora"
   }
 };
 
@@ -118,57 +118,28 @@ function renderProduct() {
 
   const copyHtml = p.copy.map(par => `<p class="leading-relaxed text-blue-50/95">${par}</p>`).join("");
 
+  // Preço: não mostrar na Mentoria
+  const priceHtml = p.price
+    ? `<div class="text-lg font-semibold mt-4 text-blue-50">Preço: <span class="text-blue-50/95">${p.price}</span></div>`
+    : "";
+
+  // Seção de compra
   let buySection = "";
-  if (p.hasMentoriaFlow) {
+  if (p.slug === "mentoria") {
+    // Botão direto pro WhatsApp
     buySection = `
-      <div class="space-y-3" id="mentoria-flow">
-        <button class="btn-primary w-full md:w-auto glow-btn" id="b1">Comprar Agora</button>
-        <div class="hidden gap-3" id="step1">
-          <button class="btn-secondary" data-opt="material">Mentoria com material</button>
-          <button class="btn-secondary" data-opt="sem">Mentoria sem material</button>
-        </div>
-        <div class="hidden gap-3" id="step2">
-          <a class="btn-primary glow-btn" id="mensal" href="#" target="_blank" rel="noopener">Plano mensal</a>
-          <a class="btn-primary glow-btn" id="trimestral" href="#" target="_blank" rel="noopener">Plano trimestral</a>
-        </div>
+      <div class="flex flex-col md:flex-row gap-3">
+        <a class="btn-primary glow-btn w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Contratar agora</a>
+        <a class="btn-outline w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Falar no WhatsApp</a>
       </div>
-      <script>
-        (function(){
-          const b1 = document.getElementById('b1');
-          const s1 = document.getElementById('step1');
-          const s2 = document.getElementById('step2');
-          const mensal = document.getElementById('mensal');
-          const trimestral = document.getElementById('trimestral');
-          let variante = null;
-
-          b1.addEventListener('click', ()=>{
-            s1.classList.remove('hidden');
-            b1.classList.add('hidden');
-          });
-
-          s1.addEventListener('click', (e)=>{
-            const opt = e.target?.dataset?.opt;
-            if(!opt) return;
-            variante = opt;
-            s2.classList.remove('hidden');
-            if (variante === 'material') {
-              mensal.href = '${CHECKOUT.mentoria_material_mensal}';
-              trimestral.href = '${CHECKOUT.mentoria_material_trimestral}';
-            } else {
-              mensal.href = '${CHECKOUT.mentoria_sem_material_mensal}';
-              trimestral.href = '${CHECKOUT.mentoria_sem_material_trimestral}';
-            }
-          });
-        })();
-      </script>
     `;
   } else {
     const sampleBtn = p.sample
-      ? `<a class="btn-outline w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
+      ? `<a class="btn-primary glow-btn w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
       : "";
     buySection = `
       <div class="flex flex-col md:flex-row gap-3">
-        <a class="btn-primary w-full md:w-auto glow-btn" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
+        <a class="btn-primary glow-btn w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
         ${sampleBtn}
       </div>
     `;
@@ -185,7 +156,7 @@ function renderProduct() {
     ${head}
     <div class="mt-8 space-y-6 glass-section section-gradient">
       ${copyHtml}
-      <div class="text-lg font-semibold mt-4 text-blue-50">Preço: <span class="text-blue-50/95">${p.price}</span></div>
+      ${priceHtml}
       <div class="mt-4 flex flex-col gap-3">
         ${buySection}
         ${auxBtns}
