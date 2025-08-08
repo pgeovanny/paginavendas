@@ -13,6 +13,12 @@ const CHECKOUT = {
   mentoria_sem_material_trimestral: "https://seu-checkout.com/mentoria-sem-material-trimestral"
 };
 
+// Links de amostra (Google Drive ou similar) – ajuste depois
+const SAMPLES = {
+  manual: "https://drive.google.com/SEU-LINK-AMOSTRA-MANUAL",
+  legislacao: "https://drive.google.com/SEU-LINK-AMOSTRA-LEGISLACAO"
+};
+
 /* ===== DADOS ESTÁTICOS DOS PRODUTOS ===== */
 const PRODUCTS = {
   "manual-do-aprovado": {
@@ -21,6 +27,7 @@ const PRODUCTS = {
     subtitle: "O passo a passo definitivo para aprender a estudar do jeito certo e passar mais rápido.",
     price: "R$ 97,00",
     img: "assets/manual.jpg",
+    sample: SAMPLES.manual, // novo
     copy: [
       "Você já gastou horas, dias e até anos estudando para concursos, mas sente que não sai do lugar? Que parece estar sempre perdido, sem saber se o que está fazendo realmente funciona? A verdade é que a maioria dos concurseiros começa errado, pulando de método em método, estudando sem organização e perdendo tempo com coisas que não trazem resultado.",
       "O Manual do Aprovado foi criado justamente para mudar essa realidade — por quem já passou por tudo isso e aprendeu na prática o que funciona de verdade para passar em concursos.",
@@ -39,6 +46,7 @@ const PRODUCTS = {
     subtitle: "Simplifique o estudo da legislação com um conteúdo direto, tabelado e com questões inéditas",
     price: "R$ 79,00",
     img: "assets/legislacao.jpg",
+    sample: SAMPLES.legislacao, // novo
     copy: [
       "Se preparar para o concurso do Tribunal de Justiça de São Paulo exige muito mais do que decorar a lei seca: é preciso conhecer profundamente a legislação interna, os prazos, as competências, e os detalhes que caem com frequência nas provas.",
       "Pensando nisso, desenvolvemos o material Legislação Interna TJ-SP 2025, em formato PDF, organizado e visualmente acessível que reúne toda a legislação cobrada no edital de forma didática e prática.",
@@ -55,6 +63,7 @@ const PRODUCTS = {
     subtitle: "Mentoria personalizada para planejar e acelerar sua aprovação.",
     price: "A partir de R$ 149,00/mês",
     img: "assets/mentoria.jpg",
+    sample: null, // sem amostra
     copy: [
       "Conseguir a aprovação em concursos públicos é um desafio que exige muito mais do que vontade: é preciso planejamento estratégico, organização, disciplina e acompanhamento correto — e é exatamente isso que nossa Mentoria oferece.",
       "Na Mentoria, você recebe um plano de estudos totalmente individualizado, elaborado especificamente para o seu perfil, considerando seu tempo disponível, o concurso que você pretende prestar, seu nível atual em cada matéria e o peso das disciplinas no edital.",
@@ -69,18 +78,19 @@ const PRODUCTS = {
   }
 };
 
-/* ===== RENDER ===== */
+/* ===== HELPERS ===== */
 function qs(name) {
   const params = new URLSearchParams(window.location.search);
   return params.get(name);
 }
 
+/* ===== RENDER ===== */
 function renderProduct() {
   const slug = qs("p");
   const root = document.getElementById("product-root");
   const wa = document.getElementById("whats-float");
   if (!slug || !PRODUCTS[slug]) {
-    root.innerHTML = `<div class="text-center text-blue-100/80">
+    root.innerHTML = `<div class="text-center text-blue-50/85">
       Produto não encontrado. <a class="underline hover:text-white" href="index.html">Voltar</a>
     </div>`;
     wa.style.display = "none";
@@ -92,26 +102,26 @@ function renderProduct() {
 
   const p = PRODUCTS[slug];
 
-  // Imagem + título + subtítulo
+  // Cabeçalho do produto
   const head = `
     <div class="grid md:grid-cols-2 gap-6 md:gap-10 items-start">
       <div class="rounded-2xl overflow-hidden shadow-xl bg-white/5 ring-1 ring-white/10">
         <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
       </div>
       <div>
-        <h1 class="text-3xl md:text-4xl font-extrabold">${p.title}</h1>
-        <p class="mt-2 text-blue-100/80">${p.subtitle}</p>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-blue-50">${p.title}</h1>
+        <p class="mt-2 text-blue-50/90">${p.subtitle}</p>
         <div class="mt-3 inline-flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 ring-1 ring-white/10">
-          <span class="text-sm text-blue-100/70">Compra garantida • Entrega imediata</span>
+          <span class="text-sm text-blue-50/85">Compra garantida • Entrega imediata</span>
         </div>
       </div>
     </div>
   `;
 
-  // Copy + preço + botões
-  const copyHtml = p.copy.map(par => `<p class="leading-relaxed text-blue-100/85">${par}</p>`).join("");
+  // Texto (mais contraste)
+  const copyHtml = p.copy.map(par => `<p class="leading-relaxed text-blue-50/95">${par}</p>`).join("");
 
-  // Botões compra
+  // Seção de compra
   let buySection = "";
   if (p.hasMentoriaFlow) {
     buySection = `
@@ -158,7 +168,16 @@ function renderProduct() {
       </script>
     `;
   } else {
-    buySection = `<a class="btn-primary w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>`;
+    // Produtos comuns: Comprar + Ver amostra
+    const sampleBtn = p.sample
+      ? `<a class="btn-outline w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
+      : "";
+    buySection = `
+      <div class="flex flex-col md:flex-row gap-3">
+        <a class="btn-primary w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
+        ${sampleBtn}
+      </div>
+    `;
   }
 
   // Dúvidas + Voltar
@@ -169,17 +188,20 @@ function renderProduct() {
     </div>
   `;
 
-  root.innerHTML = `
+  // Render final
+  const html = `
     ${head}
     <div class="mt-8 space-y-6">
       ${copyHtml}
-      <div class="text-lg font-semibold mt-4">Preço: <span class="text-blue-100">${p.price}</span></div>
+      <div class="text-lg font-semibold mt-4 text-blue-50">Preço: <span class="text-blue-50/95">${p.price}</span></div>
       <div class="mt-4 flex flex-col gap-3">
         ${buySection}
         ${auxBtns}
       </div>
     </div>
   `;
+
+  document.getElementById("product-root").innerHTML = html;
 }
 
 document.addEventListener("DOMContentLoaded", renderProduct);
