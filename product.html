@@ -47,5 +47,23 @@
       © PG Concursos — Dominando o Edital
     </div>
   </footer>
+
+  <script>
+    // Shine automático nos CTAs também nesta página
+    (function autoShineLoop(){
+      const ctas = document.querySelectorAll('.btn-primary, .btn-outline');
+      let idx = 0;
+      function shineNext(){
+        if(!ctas.length) return;
+        const el = ctas[idx % ctas.length];
+        el.classList.add('shine-now');
+        setTimeout(()=> el.classList.remove('shine-now'), 1100);
+        idx++;
+        const wait = 8000 + Math.floor(Math.random()*2500);
+        setTimeout(shineNext, wait);
+      }
+      setTimeout(shineNext, 2200);
+    })();
+  </script>
 </body>
 </html>
