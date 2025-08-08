@@ -56,61 +56,57 @@
   <!-- MENU EM LISTA/ACCORDION -->
   <section id="menu" class="max-w-6xl mx-auto px-4 pb-24 space-y-6">
     <!-- Materiais -->
-    <div class="energy-wrap">
-      <div class="acc-item glass-section section-gradient">
-        <button class="acc-trigger" data-target="acc-materiais">
-          <div class="flex items-center gap-3">
-            <div class="acc-icon"><span></span></div>
-            <div>
-              <div class="acc-title">Materiais</div>
-              <div class="acc-sub">PDFs práticos para acelerar seus estudos</div>
+    <div class="acc-item glass-section section-gradient">
+      <button class="acc-trigger ring-energy" data-target="acc-materiais">
+        <div class="flex items-center gap-3">
+          <div class="acc-icon"><span></span></div>
+          <div>
+            <div class="acc-title">Materiais</div>
+            <div class="acc-sub">PDFs práticos para acelerar seus estudos</div>
+          </div>
+        </div>
+        <svg class="acc-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5 7l5 5 5-5"/></svg>
+      </button>
+      <div id="acc-materiais" class="acc-panel">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <!-- Manual -->
+          <a href="product.html?p=manual-do-aprovado" class="card-btn neon-outline card-gradient card-shine">
+            <div class="p-5">
+              <h3 class="btn-title">Manual do Aprovado</h3>
+              <p class="card-quote">O passo a passo definitivo para aprender a estudar do jeito certo e passar mais rápido.</p>
             </div>
-          </div>
-          <svg class="acc-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5 7l5 5 5-5"/></svg>
-        </button>
-        <div id="acc-materiais" class="acc-panel">
-          <div class="grid sm:grid-cols-2 gap-4">
-            <!-- Manual -->
-            <a href="product.html?p=manual-do-aprovado" class="card-btn neon-outline card-gradient card-shine">
-              <div class="p-5">
-                <h3 class="btn-title">Manual do Aprovado</h3>
-                <p class="card-quote">O passo a passo definitivo para aprender a estudar do jeito certo e passar mais rápido.</p>
-              </div>
-            </a>
-            <!-- Legislação -->
-            <a href="product.html?p=legislacao-interna-tjsp-2025" class="card-btn neon-outline card-gradient card-shine">
-              <div class="p-5">
-                <h3 class="btn-title">Legislação Interna TJ-SP 2025</h3>
-                <p class="card-quote">Simplifique o estudo da legislação com um conteúdo direto, tabelado e com questões inéditas</p>
-              </div>
-            </a>
-          </div>
+          </a>
+          <!-- Legislação -->
+          <a href="product.html?p=legislacao-interna-tjsp-2025" class="card-btn neon-outline card-gradient card-shine">
+            <div class="p-5">
+              <h3 class="btn-title">Legislação Interna TJ-SP 2025</h3>
+              <p class="card-quote">Simplifique o estudo da legislação com um conteúdo direto, tabelado e com questões inéditas</p>
+            </div>
+          </a>
         </div>
       </div>
     </div>
 
     <!-- Mentoria -->
-    <div class="energy-wrap">
-      <div class="acc-item glass-section section-gradient">
-        <button class="acc-trigger" data-target="acc-mentoria">
-          <div class="flex items-center gap-3">
-            <div class="acc-icon"><span></span></div>
-            <div>
-              <div class="acc-title">Mentoria</div>
-              <div class="acc-sub">Planejamento personalizado e acompanhamento direto</div>
+    <div class="acc-item glass-section section-gradient">
+      <button class="acc-trigger ring-energy" data-target="acc-mentoria">
+        <div class="flex items-center gap-3">
+          <div class="acc-icon"><span></span></div>
+          <div>
+            <div class="acc-title">Mentoria</div>
+            <div class="acc-sub">Planejamento personalizado e acompanhamento direto</div>
+          </div>
+        </div>
+        <svg class="acc-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5 7l5 5 5-5"/></svg>
+      </button>
+      <div id="acc-mentoria" class="acc-panel">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <a href="product.html?p=mentoria" class="card-btn neon-outline card-gradient card-shine">
+            <div class="p-5">
+              <h3 class="btn-title">Mentoria</h3>
+              <p class="card-quote">Mentoria personalizada para planejar e acelerar sua aprovação.</p>
             </div>
-          </div>
-          <svg class="acc-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5 7l5 5 5-5"/></svg>
-        </button>
-        <div id="acc-mentoria" class="acc-panel">
-          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <a href="product.html?p=mentoria" class="card-btn neon-outline card-gradient card-shine">
-              <div class="p-5">
-                <h3 class="btn-title">Mentoria</h3>
-                <p class="card-quote">Mentoria personalizada para planejar e acelerar sua aprovação.</p>
-              </div>
-            </a>
-          </div>
+          </a>
         </div>
       </div>
     </div>
@@ -155,11 +151,10 @@
         el.classList.add('shine-now');
         setTimeout(()=> el.classList.remove('shine-now'), 1100);
         idx++;
-        // espaçamento aleatório leve (8–10.5s) pra parecer orgânico
         const wait = 8000 + Math.floor(Math.random()*2500);
         setTimeout(shineNext, wait);
       }
-      setTimeout(shineNext, 1800); // primeira depois de 1.8s
+      setTimeout(shineNext, 1800);
     }
     autoShineLoop(document);
   </script>
