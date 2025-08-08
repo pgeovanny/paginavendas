@@ -123,7 +123,7 @@ function renderProduct() {
     ? `<div class="product-price">Preço: <span>${p.price}</span></div>`
     : "";
 
-  // LINHA DE CTAs ALINHADOS NO FINAL
+  // Linha de CTAs alinhada (PDFs: Comprar + Amostra + Dúvidas) (Mentoria: Contratar + Dúvidas)
   let ctasRow = "";
   if (p.slug === "mentoria") {
     ctasRow = `
@@ -145,7 +145,6 @@ function renderProduct() {
     `;
   }
 
-  // Botão "Voltar" separado (fica simples e acessível)
   const backRow = `
     <div class="mt-3">
       <a class="btn-ghost" href="index.html">Voltar</a>
@@ -166,7 +165,7 @@ function renderProduct() {
 
   root.innerHTML = html;
 
-  // Efeito tilt simples nos cards de imagem (desktop)
+  // Efeito tilt simples no card de imagem
   const tilt = document.querySelector('.card-tilt');
   if (tilt) {
     tilt.addEventListener('mousemove', (e) => {
