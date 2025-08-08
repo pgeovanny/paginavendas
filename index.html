@@ -17,7 +17,7 @@
     }}}
   </script>
 </head>
-<body class="bg-brand-900 text-white font-[Inter]">
+<body class="bg-brand-900 text-white font-[Inter] page-gradient">
   <!-- Header fixo -->
   <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-brand-900/80 bg-brand-900/95 border-b border-white/10 glow-top">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -26,58 +26,52 @@
         <span class="text-white/60 text-lg md:text-xl">×</span>
         <span class="text-xl md:text-2xl text-blue-50">Dominando o Edital</span>
       </a>
-      <nav class="hidden md:flex gap-6 text-blue-50/80">
+      <nav class="hidden md:flex gap-6">
         <a href="#produtos" class="nav-link">Produtos</a>
         <a href="#sobre" class="nav-link">Sobre</a>
       </nav>
     </div>
   </header>
 
-  <!-- Hero com efeito premium -->
+  <!-- Hero (sem as frases pedidas) -->
   <section class="relative overflow-hidden">
-    <!-- glow premium -->
     <div class="premium-glow" aria-hidden="true"></div>
     <div class="max-w-6xl mx-auto px-4 py-16 md:py-24 text-center">
       <h1 class="text-3xl md:text-5xl font-extrabold leading-tight text-blue-50">
         Você está mais próximo da sua <span class="underline-accent">aprovação</span>.
       </h1>
-      <p class="mt-4 text-blue-50/90 max-w-2xl mx-auto">
-        Materiais práticos e mentoria para estudar do jeito certo e passar mais rápido.
-      </p>
-      <!-- mini “glass badge” opcional (efeito apenas visual) -->
-      <div class="mx-auto mt-6 inline-flex items-center gap-2 glass-badge">
-        <span class="dot"></span>
-        <span class="text-sm text-blue-50/85">Conteúdo verificado e entrega imediata</span>
-      </div>
     </div>
   </section>
 
-  <!-- Lista de produtos como botões (cards com glow) -->
+  <!-- Lista de produtos com subtítulos bonitos -->
   <section id="produtos" class="max-w-6xl mx-auto px-4 pb-24">
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <a href="product.html?p=manual-do-aprovado" class="card-btn neon-outline">
+      <!-- Manual -->
+      <a href="product.html?p=manual-do-aprovado" class="card-btn neon-outline card-gradient">
         <div class="p-6">
           <h3 class="btn-title text-blue-50">Manual do Aprovado</h3>
-          <p class="btn-sub text-blue-50/90">Passo a passo definitivo</p>
+          <p class="card-quote">“O passo a passo definitivo para aprender a estudar do jeito certo e passar mais rápido.”</p>
         </div>
       </a>
-      <a href="product.html?p=legislacao-interna-tjsp-2025" class="card-btn neon-outline">
+      <!-- Legislação -->
+      <a href="product.html?p=legislacao-interna-tjsp-2025" class="card-btn neon-outline card-gradient">
         <div class="p-6">
           <h3 class="btn-title text-blue-50">Legislação Interna TJ-SP 2025</h3>
-          <p class="btn-sub text-blue-50/90">Conteúdo direto e tabelado</p>
+          <p class="card-quote">“Simplifique o estudo da legislação com um conteúdo direto, tabelado e com questões inéditas”</p>
         </div>
       </a>
-      <a href="product.html?p=mentoria" class="card-btn neon-outline">
+      <!-- Mentoria -->
+      <a href="product.html?p=mentoria" class="card-btn neon-outline card-gradient">
         <div class="p-6">
           <h3 class="btn-title text-blue-50">Mentoria</h3>
-          <p class="btn-sub text-blue-50/90">Planejar e acelerar sua aprovação</p>
+          <p class="card-quote">“Mentoria personalizada para planejar e acelerar sua aprovação.”</p>
         </div>
       </a>
     </div>
   </section>
 
-  <!-- Sobre (opcional) -->
-  <section id="sobre" class="bg-brand-800/40 border-t border-white/10">
+  <!-- Sobre -->
+  <section id="sobre" class="bg-brand-800/30 border-t border-white/10 section-gradient">
     <div class="max-w-6xl mx-auto px-4 py-12 md:py-16">
       <h2 class="text-2xl font-bold text-blue-50">Sobre</h2>
       <p class="text-blue-50/90 mt-3 max-w-3xl">
