@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Produto | PG Concursos - Dominando o Edital</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Página de produto — PG Concursos">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { brand: { 900:'#0b1b3a', 800:'#102653', 700:'#18356f', 600:'#204489' } }
+    }}}
+  </script>
+  <script defer src="products.js"></script>
+</head>
+<body class="bg-brand-900 text-white font-[Inter]">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-brand-900/80 bg-brand-900/95 border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="index.html" class="flex items-baseline gap-2 font-extrabold tracking-tight">
+        <span class="text-xl md:text-2xl">PG Concursos</span>
+        <span class="text-white/60 text-lg md:text-xl">×</span>
+        <span class="text-xl md:text-2xl text-blue-100">Dominando o Edital</span>
+      </a>
+      <a href="index.html" class="text-sm md:text-base text-blue-100/80 hover:text-white transition">Voltar</a>
+    </div>
+  </header>
+
+  <!-- Conteúdo do produto -->
+  <main class="max-w-5xl mx-auto px-4 py-10 md:py-14">
+    <div id="product-root" class="space-y-6"></div>
+  </main>
+
+  <!-- WhatsApp flutuante (apenas nas páginas de produto) -->
+  <a id="whats-float" class="fixed bottom-5 right-5 inline-flex items-center justify-center w-14 h-14 rounded-full shadow-lg bg-green-500 hover:bg-green-400 focus:ring-2 focus:ring-white/20 transition"
+     target="_blank" rel="noopener">
+    <span class="sr-only">Contato no WhatsApp</span>
+    <!-- ícone simples -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.62-6.003C.122 5.281 5.403 0 12.057 0c3.181 0 6.167 1.24 8.41 3.488A11.82 11.82 0 0123.9 12.05c-.003 6.653-5.284 11.935-11.94 11.935a11.95 11.95 0 01-6.003-1.62L.057 24zm6.597-3.807c1.735 1.03 3.276 1.668 5.392 1.67 5.448.003 9.886-4.43 9.889-9.877.002-5.462-4.415-9.89-9.881-9.893-5.45-.003-9.887 4.43-9.889 9.878a9.8 9.8 0 001.68 5.43l-.999 3.648 3.808-.856zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.03-.967-.272-.099-.47-.149-.668.149-.198.297-.767.967-.94 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.149-.173.198-.297.298-.495.099-.198.05-.372-.025-.521-.074-.149-.668-1.611-.915-2.206-.24-.579-.484-.5-.668-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.71.306 1.263.489 1.694.626.712.227 1.36.195 1.872.118.571-.085 1.758-.718 2.006-1.41.248-.694.248-1.29.173-1.414z"/></svg>
+  </a>
+
+  <footer class="border-t border-white/10 mt-16">
+    <div class="max-w-6xl mx-auto px-4 py-8 text-blue-100/60 text-sm">
+      © PG Concursos — Dominando o Edital
+    </div>
+  </footer>
+</body>
+</html>
