@@ -1,9 +1,8 @@
 /* ===== CONFIGURAÇÕES GERAIS ===== */
-const WHATSAPP_NUMBER = "5599999999999"; // DDI+DDD+número
+const WHATSAPP_NUMBER = "5599999999999";
 const WHATSAPP_MSG = encodeURIComponent("Olá! Tenho dúvidas / Quero contratar agora.");
 const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
 
-// Links de checkout (troque pelos reais)
 const CHECKOUT = {
   manual: "https://seu-checkout.com/manual",
   legislacao: "https://seu-checkout.com/legislacao",
@@ -13,13 +12,11 @@ const CHECKOUT = {
   mentoria_sem_material_trimestral: "https://seu-checkout.com/mentoria-sem-material-trimestral"
 };
 
-// Links de amostra – ajuste depois
 const SAMPLES = {
   manual: "https://drive.google.com/SEU-LINK-AMOSTRA-MANUAL",
   legislacao: "https://drive.google.com/SEU-LINK-AMOSTRA-LEGISLACAO"
 };
 
-/* ===== DADOS ESTÁTICOS DOS PRODUTOS ===== */
 const PRODUCTS = {
   "manual-do-aprovado": {
     slug: "manual-do-aprovado",
@@ -61,7 +58,7 @@ const PRODUCTS = {
     slug: "mentoria",
     title: "Mentoria",
     subtitle: "Mentoria personalizada para planejar e acelerar sua aprovação.",
-    price: null, // sem preço
+    price: null,
     img: "assets/mentoria.jpg",
     sample: null,
     copy: [
@@ -74,7 +71,7 @@ const PRODUCTS = {
       "Se você quer deixar de estudar sem rumo, a Mentoria é sua solução para acelerar sua preparação com foco e estratégia."
     ],
     checkout: null,
-    hasMentoriaFlow: false // CTA direto para WhatsApp
+    hasMentoriaFlow: false
   }
 };
 
@@ -118,12 +115,8 @@ function renderProduct() {
   `;
 
   const copyHtml = p.copy.map(par => `<p>${par}</p>`).join("");
+  const priceHtml = p.price ? `<div class="product-price">Preço: <span>${p.price}</span></div>` : "";
 
-  const priceHtml = p.price
-    ? `<div class="product-price">Preço: <span>${p.price}</span></div>`
-    : "";
-
-  // Linha de CTAs alinhada (PDFs: Comprar + Amostra + Dúvidas) (Mentoria: Contratar + Dúvidas)
   let ctasRow = "";
   if (p.slug === "mentoria") {
     ctasRow = `
@@ -145,13 +138,9 @@ function renderProduct() {
     `;
   }
 
-  const backRow = `
-    <div class="mt-3">
-      <a class="btn-ghost" href="index.html">Voltar</a>
-    </div>
-  `;
+  const backRow = `<div class="mt-3"><a class="btn-ghost" href="index.html">Voltar</a></div>`;
 
-  const html = `
+  root.innerHTML = `
     ${head}
     <div class="mt-8 space-y-6 glass-section section-gradient product-copy">
       ${copyHtml}
@@ -163,9 +152,6 @@ function renderProduct() {
     </div>
   `;
 
-  root.innerHTML = html;
-
-  // Efeito tilt simples no card de imagem
   const tilt = document.querySelector('.card-tilt');
   if (tilt) {
     tilt.addEventListener('mousemove', (e) => {
@@ -181,7 +167,6 @@ function renderProduct() {
     });
   }
 
-  // Shine automático local (reforço caso o HTML seja carregado depois)
   (function autoShineLoop(){
     const ctas = document.querySelectorAll('.btn-primary, .btn-outline');
     let idx = 0;
