@@ -27,7 +27,7 @@ const PRODUCTS = {
     subtitle: "O passo a passo definitivo para aprender a estudar do jeito certo e passar mais rápido.",
     price: "R$ 97,00",
     img: "assets/manual.jpg",
-    sample: SAMPLES.manual, // novo
+    sample: SAMPLES.manual,
     copy: [
       "Você já gastou horas, dias e até anos estudando para concursos, mas sente que não sai do lugar? Que parece estar sempre perdido, sem saber se o que está fazendo realmente funciona? A verdade é que a maioria dos concurseiros começa errado, pulando de método em método, estudando sem organização e perdendo tempo com coisas que não trazem resultado.",
       "O Manual do Aprovado foi criado justamente para mudar essa realidade — por quem já passou por tudo isso e aprendeu na prática o que funciona de verdade para passar em concursos.",
@@ -46,7 +46,7 @@ const PRODUCTS = {
     subtitle: "Simplifique o estudo da legislação com um conteúdo direto, tabelado e com questões inéditas",
     price: "R$ 79,00",
     img: "assets/legislacao.jpg",
-    sample: SAMPLES.legislacao, // novo
+    sample: SAMPLES.legislacao,
     copy: [
       "Se preparar para o concurso do Tribunal de Justiça de São Paulo exige muito mais do que decorar a lei seca: é preciso conhecer profundamente a legislação interna, os prazos, as competências, e os detalhes que caem com frequência nas provas.",
       "Pensando nisso, desenvolvemos o material Legislação Interna TJ-SP 2025, em formato PDF, organizado e visualmente acessível que reúne toda a legislação cobrada no edital de forma didática e prática.",
@@ -63,7 +63,7 @@ const PRODUCTS = {
     subtitle: "Mentoria personalizada para planejar e acelerar sua aprovação.",
     price: "A partir de R$ 149,00/mês",
     img: "assets/mentoria.jpg",
-    sample: null, // sem amostra
+    sample: null,
     copy: [
       "Conseguir a aprovação em concursos públicos é um desafio que exige muito mais do que vontade: é preciso planejamento estratégico, organização, disciplina e acompanhamento correto — e é exatamente isso que nossa Mentoria oferece.",
       "Na Mentoria, você recebe um plano de estudos totalmente individualizado, elaborado especificamente para o seu perfil, considerando seu tempo disponível, o concurso que você pretende prestar, seu nível atual em cada matéria e o peso das disciplinas no edital.",
@@ -93,32 +93,34 @@ function renderProduct() {
     root.innerHTML = `<div class="text-center text-blue-50/85">
       Produto não encontrado. <a class="underline hover:text-white" href="index.html">Voltar</a>
     </div>`;
-    wa.style.display = "none";
+    if (wa) wa.style.display = "none";
     return;
   }
 
   // WhatsApp float link
-  wa.href = WA_LINK;
+  if (wa) wa.href = WA_LINK;
 
   const p = PRODUCTS[slug];
 
-  // Cabeçalho do produto
+  // Cabeçalho do produto (com “glass card” + neon outline)
   const head = `
     <div class="grid md:grid-cols-2 gap-6 md:gap-10 items-start">
-      <div class="rounded-2xl overflow-hidden shadow-xl bg-white/5 ring-1 ring-white/10">
+      <div class="glass-card neon-outline rounded-2xl overflow-hidden">
         <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
       </div>
-      <div>
-        <h1 class="text-3xl md:text-4xl font-extrabold text-blue-50">${p.title}</h1>
-        <p class="mt-2 text-blue-50/90">${p.subtitle}</p>
-        <div class="mt-3 inline-flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 ring-1 ring-white/10">
-          <span class="text-sm text-blue-50/85">Compra garantida • Entrega imediata</span>
+      <div class="glass-panel">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-blue-50">
+          ${p.title}
+        </h1>
+        <p class="mt-2 text-blue-50/92">${p.subtitle}</p>
+        <div class="mt-3 inline-flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 ring-1 ring-white/10 soft-shadow">
+          <span class="text-sm text-blue-50/90">Compra garantida • Entrega imediata</span>
         </div>
       </div>
     </div>
   `;
 
-  // Texto (mais contraste)
+  // Texto (alto contraste)
   const copyHtml = p.copy.map(par => `<p class="leading-relaxed text-blue-50/95">${par}</p>`).join("");
 
   // Seção de compra
@@ -126,14 +128,14 @@ function renderProduct() {
   if (p.hasMentoriaFlow) {
     buySection = `
       <div class="space-y-3" id="mentoria-flow">
-        <button class="btn-primary w-full md:w-auto" id="b1">Comprar Agora</button>
+        <button class="btn-primary w-full md:w-auto glow-btn" id="b1">Comprar Agora</button>
         <div class="hidden gap-3" id="step1">
           <button class="btn-secondary" data-opt="material">Mentoria com material</button>
           <button class="btn-secondary" data-opt="sem">Mentoria sem material</button>
         </div>
         <div class="hidden gap-3" id="step2">
-          <a class="btn-primary" id="mensal" href="#" target="_blank" rel="noopener">Plano mensal</a>
-          <a class="btn-primary" id="trimestral" href="#" target="_blank" rel="noopener">Plano trimestral</a>
+          <a class="btn-primary glow-btn" id="mensal" href="#" target="_blank" rel="noopener">Plano mensal</a>
+          <a class="btn-primary glow-btn" id="trimestral" href="#" target="_blank" rel="noopener">Plano trimestral</a>
         </div>
       </div>
       <script>
@@ -155,7 +157,6 @@ function renderProduct() {
             if(!opt) return;
             variante = opt;
             s2.classList.remove('hidden');
-            // set links
             if (variante === 'material') {
               mensal.href = '${CHECKOUT.mentoria_material_mensal}';
               trimestral.href = '${CHECKOUT.mentoria_material_trimestral}';
@@ -168,13 +169,12 @@ function renderProduct() {
       </script>
     `;
   } else {
-    // Produtos comuns: Comprar + Ver amostra
     const sampleBtn = p.sample
       ? `<a class="btn-outline w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
       : "";
     buySection = `
       <div class="flex flex-col md:flex-row gap-3">
-        <a class="btn-primary w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
+        <a class="btn-primary w-full md:w-auto glow-btn" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
         ${sampleBtn}
       </div>
     `;
@@ -188,10 +188,10 @@ function renderProduct() {
     </div>
   `;
 
-  // Render final
+  // Render final com “section panel”
   const html = `
     ${head}
-    <div class="mt-8 space-y-6">
+    <div class="mt-8 space-y-6 glass-section">
       ${copyHtml}
       <div class="text-lg font-semibold mt-4 text-blue-50">Preço: <span class="text-blue-50/95">${p.price}</span></div>
       <div class="mt-4 flex flex-col gap-3">
