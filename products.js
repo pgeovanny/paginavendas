@@ -1,6 +1,6 @@
 /* ===== CONFIGURAÇÕES GERAIS ===== */
 const WHATSAPP_NUMBER = "5599999999999"; // DDI+DDD+número
-const WHATSAPP_MSG = encodeURIComponent("Olá! Tenho dúvidas sobre a Mentoria / Quero contratar agora.");
+const WHATSAPP_MSG = encodeURIComponent("Olá! Tenho dúvidas / Quero contratar agora.");
 const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
 
 // Links de checkout (troque pelos reais)
@@ -74,7 +74,7 @@ const PRODUCTS = {
       "Se você quer deixar de estudar sem rumo, a Mentoria é sua solução para acelerar sua preparação com foco e estratégia."
     ],
     checkout: null,
-    hasMentoriaFlow: false // desativa o fluxo antigo, agora é "Contratar agora"
+    hasMentoriaFlow: false // agora é CTA direto pro WhatsApp
   }
 };
 
@@ -103,14 +103,15 @@ function renderProduct() {
 
   const head = `
     <div class="grid md:grid-cols-2 gap-6 md:gap-10 items-start">
-      <div class="glass-card neon-outline rounded-2xl overflow-hidden card-gradient">
+      <div class="glass-card neon-outline rounded-2xl overflow-hidden card-gradient card-tilt">
         <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
       </div>
       <div class="glass-panel panel-gradient">
         <h1 class="text-3xl md:text-4xl font-extrabold text-blue-50">${p.title}</h1>
         <p class="mt-2 text-blue-50/92">${p.subtitle}</p>
-        <div class="mt-3 inline-flex items-center gap-2 rounded-xl bg-white/5 px-3 py-2 ring-1 ring-white/10 soft-shadow">
-          <span class="text-sm text-blue-50/90">Compra garantida • Entrega imediata</span>
+        <div class="status-badge mt-3 inline-flex items-center gap-2 rounded-xl px-3 py-2 soft-shadow">
+          <span class="status-dot status-dot--green" aria-hidden="true"></span>
+          <span class="text-sm text-blue-50/92">Compra garantida • Entrega imediata</span>
         </div>
       </div>
     </div>
@@ -118,15 +119,12 @@ function renderProduct() {
 
   const copyHtml = p.copy.map(par => `<p class="leading-relaxed text-blue-50/95">${par}</p>`).join("");
 
-  // Preço: não mostrar na Mentoria
   const priceHtml = p.price
     ? `<div class="text-lg font-semibold mt-4 text-blue-50">Preço: <span class="text-blue-50/95">${p.price}</span></div>`
     : "";
 
-  // Seção de compra
   let buySection = "";
   if (p.slug === "mentoria") {
-    // Botão direto pro WhatsApp
     buySection = `
       <div class="flex flex-col md:flex-row gap-3">
         <a class="btn-primary glow-btn w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Contratar agora</a>
@@ -165,6 +163,22 @@ function renderProduct() {
   `;
 
   document.getElementById("product-root").innerHTML = html;
+
+  // Efeito tilt simples nos cards de imagem (desktop)
+  const tilt = document.querySelector('.card-tilt');
+  if (tilt) {
+    tilt.addEventListener('mousemove', (e) => {
+      const r = tilt.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      const rx = ((y / r.height) - 0.5) * -6;
+      const ry = ((x / r.width) - 0.5) * 6;
+      tilt.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+    });
+    tilt.addEventListener('mouseleave', () => {
+      tilt.style.transform = 'rotateX(0) rotateY(0)';
+    });
+  }
 }
 
 document.addEventListener("DOMContentLoaded", renderProduct);
