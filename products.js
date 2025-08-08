@@ -74,7 +74,7 @@ const PRODUCTS = {
       "Se você quer deixar de estudar sem rumo, a Mentoria é sua solução para acelerar sua preparação com foco e estratégia."
     ],
     checkout: null,
-    hasMentoriaFlow: false // agora é CTA direto pro WhatsApp
+    hasMentoriaFlow: false // CTA direto para WhatsApp
   }
 };
 
@@ -90,7 +90,7 @@ function renderProduct() {
   const root = document.getElementById("product-root");
   const wa = document.getElementById("whats-float");
   if (!slug || !PRODUCTS[slug]) {
-    root.innerHTML = `<div class="text-center text-blue-50/85">
+    root.innerHTML = `<div class="text-center text-blue-50/90 text-[1.05rem]">
       Produto não encontrado. <a class="underline hover:text-white" href="index.html">Voltar</a>
     </div>`;
     if (wa) wa.style.display = "none";
@@ -107,20 +107,20 @@ function renderProduct() {
         <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
       </div>
       <div class="glass-panel panel-gradient">
-        <h1 class="text-3xl md:text-4xl font-extrabold text-blue-50">${p.title}</h1>
-        <p class="mt-2 text-blue-50/92">${p.subtitle}</p>
+        <h1 class="product-title">${p.title}</h1>
+        <p class="product-subtitle">${p.subtitle}</p>
         <div class="status-badge mt-3 inline-flex items-center gap-2 rounded-xl px-3 py-2 soft-shadow">
           <span class="status-dot status-dot--green" aria-hidden="true"></span>
-          <span class="text-sm text-blue-50/92">Compra garantida • Entrega imediata</span>
+          <span class="text-sm md:text-[.95rem] text-blue-50/92">Compra garantida • Entrega imediata</span>
         </div>
       </div>
     </div>
   `;
 
-  const copyHtml = p.copy.map(par => `<p class="leading-relaxed text-blue-50/95">${par}</p>`).join("");
+  const copyHtml = p.copy.map(par => `<p>${par}</p>`).join("");
 
   const priceHtml = p.price
-    ? `<div class="text-lg font-semibold mt-4 text-blue-50">Preço: <span class="text-blue-50/95">${p.price}</span></div>`
+    ? `<div class="product-price">Preço: <span>${p.price}</span></div>`
     : "";
 
   let buySection = "";
@@ -152,7 +152,7 @@ function renderProduct() {
 
   const html = `
     ${head}
-    <div class="mt-8 space-y-6 glass-section section-gradient">
+    <div class="mt-8 space-y-6 glass-section section-gradient product-copy">
       ${copyHtml}
       ${priceHtml}
       <div class="mt-4 flex flex-col gap-3">
@@ -162,7 +162,7 @@ function renderProduct() {
     </div>
   `;
 
-  document.getElementById("product-root").innerHTML = html;
+  root.innerHTML = html;
 
   // Efeito tilt simples nos cards de imagem (desktop)
   const tilt = document.querySelector('.card-tilt');
