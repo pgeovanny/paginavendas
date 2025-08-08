@@ -104,7 +104,7 @@ function renderProduct() {
   const head = `
     <div class="grid md:grid-cols-2 gap-6 md:gap-10 items-start">
       <div class="glass-card neon-outline rounded-2xl overflow-hidden card-gradient card-tilt">
-        <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
+        <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover" loading="lazy">
       </div>
       <div class="glass-panel panel-gradient">
         <h1 class="product-title">${p.title}</h1>
@@ -128,19 +128,19 @@ function renderProduct() {
   if (p.slug === "mentoria") {
     ctasRow = `
       <div class="flex flex-col md:flex-row flex-wrap gap-3">
-        <a class="btn-primary glow-btn w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Contratar agora</a>
-        <a class="btn-outline w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
+        <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Contratar agora</a>
+        <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
       </div>
     `;
   } else {
     const sampleBtn = p.sample
-      ? `<a class="btn-primary glow-btn w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
+      ? `<a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
       : "";
     ctasRow = `
       <div class="flex flex-col md:flex-row flex-wrap gap-3">
-        <a class="btn-primary glow-btn w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
+        <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
         ${sampleBtn}
-        <a class="btn-outline w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
+        <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
       </div>
     `;
   }
@@ -180,6 +180,22 @@ function renderProduct() {
       tilt.style.transform = 'rotateX(0) rotateY(0)';
     });
   }
+
+  // Shine automático local (reforço caso o HTML seja carregado depois)
+  (function autoShineLoop(){
+    const ctas = document.querySelectorAll('.btn-primary, .btn-outline');
+    let idx = 0;
+    function shineNext(){
+      if(!ctas.length) return;
+      const el = ctas[idx % ctas.length];
+      el.classList.add('shine-now');
+      setTimeout(()=> el.classList.remove('shine-now'), 1100);
+      idx++;
+      const wait = 8000 + Math.floor(Math.random()*2500);
+      setTimeout(shineNext, wait);
+    }
+    setTimeout(shineNext, 2000);
+  })();
 }
 
 document.addEventListener("DOMContentLoaded", renderProduct);
