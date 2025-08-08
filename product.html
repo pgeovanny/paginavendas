@@ -18,24 +18,22 @@
   <script defer src="products.js"></script>
 </head>
 <body class="bg-brand-900 text-white font-[Plus Jakarta Sans] page-gradient">
-  <!-- Header (mobile melhorado) -->
+  <!-- Header com logo responsiva completa -->
   <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-brand-900/70 bg-brand-900/90 border-b border-white/10 glow-top">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-      <a href="index.html" class="flex items-center gap-2 font-extrabold tracking-tight premium-logo shrink">
-        <span class="text-[1.15rem] md:text-[1.35rem]">PG Concursos</span>
-        <span class="text-white/60 hidden xs:inline">×</span>
-        <span class="text-[1.15rem] md:text-[1.35rem] text-blue-50 hidden sm:inline">Dominando o Edital</span>
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      <a href="index.html" class="brand-wrap premium-logo">
+        <span class="brand-a">PG Concursos</span>
+        <span class="brand-x">×</span>
+        <span class="brand-b">Dominando o Edital</span>
       </a>
       <a href="index.html" class="text-sm md:text-base nav-link">Voltar</a>
     </div>
   </header>
 
-  <!-- Conteúdo do produto -->
   <main class="max-w-5xl mx-auto px-4 py-10 md:py-14">
     <div id="product-root" class="space-y-6"></div>
   </main>
 
-  <!-- WhatsApp flutuante (apenas em produto) -->
   <a id="whats-float" class="fixed bottom-5 right-5 inline-flex items-center justify-center w-14 h-14 rounded-full shadow-lg bg-green-500 hover:bg-green-400 focus:ring-2 focus:ring-white/20 transition neon-pulse"
      target="_blank" rel="noopener">
     <span class="sr-only">Contato no WhatsApp</span>
@@ -49,7 +47,6 @@
   </footer>
 
   <script>
-    // Shine automático nos CTAs também nesta página
     (function autoShineLoop(){
       const ctas = document.querySelectorAll('.btn-primary, .btn-outline');
       let idx = 0;
