@@ -13,7 +13,7 @@ const CHECKOUT = {
 };
 
 /* ===== ENDPOINT DO GOOGLE APPS SCRIPT (SEU WEB APP) ===== */
-const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbxNbPS_2WKfRwgzWKZ3DYOv-0vKYoBsyUgHeIzSpKEdYb5BxPYPzChGXmvjYxlf5IW_pQ/exec";
+const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbzYKxtH7C3ekGG3AQRn8WtakO-lpCrb30nG-hFHB0fTmg-Zm4ianENWfPzT81THW34n3w/exec";
 
 /* ===== UID local (1 voto por usuário/navegador) ===== */
 function getUID(){
