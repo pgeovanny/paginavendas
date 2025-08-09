@@ -12,8 +12,8 @@ const CHECKOUT = {
   mentoria_sem_material_trimestral: "https://seu-checkout.com/mentoria-sem-material-trimestral"
 };
 
-/* ===== ENDPOINT DO GOOGLE APPS SCRIPT (cole seu URL de deploy) ===== */
-const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/SEU_DEPLOY_ID/exec";
+/* ===== ENDPOINT DO GOOGLE APPS SCRIPT (SEU WEB APP) ===== */
+const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbzU4qogQg789YfKdzzH0NT16-s6V6hEABbiiJDez_QxQwXxtSONCYVveCWOW483qrWSTw/exec";
 
 /* ===== DADOS ESTÁTICOS (sem imagens) ===== */
 const PRODUCTS = {
@@ -75,7 +75,7 @@ function qs(name) {
 }
 function fmt(n){ return typeof n === "number" ? n : parseInt(n || "0", 10); }
 
-/* ===== VOTOS: integração com Google Apps Script ===== */
+/* ===== VOTOS: integração com Google Apps Script (GET) ===== */
 async function fetchVotes(slug){
   try{
     const url = `${GAS_ENDPOINT_BASE}?action=stats&slug=${encodeURIComponent(slug)}`;
@@ -89,13 +89,10 @@ async function fetchVotes(slug){
 }
 async function sendVote(slug, dir){ // dir: "up" | "down"
   try{
-    const res = await fetch(GAS_ENDPOINT_BASE, {
-      method: "POST",
-      headers: { "Content-Type":"application/json" },
-      body: JSON.stringify({ action:"vote", slug, dir })
-    });
+    const url = `${GAS_ENDPOINT_BASE}?action=vote&slug=${encodeURIComponent(slug)}&dir=${encodeURIComponent(dir)}`;
+    const res = await fetch(url, { method: "GET" });
     if(!res.ok) throw new Error("HTTP "+res.status);
-    return await res.json(); // { up, down }
+    return await res.json(); // { up, down, [rate_limited] }
   }catch(e){
     console.warn("Falha ao votar:", e);
     return null;
