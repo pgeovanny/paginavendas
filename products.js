@@ -2,7 +2,7 @@
 const WHATSAPP_NUMBER = "5599999999999";
 const WHATSAPP_MSG = encodeURIComponent("Olá! Tenho dúvidas / Quero contratar agora.");
 const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
-const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbwNxVsDc992m5EKGtfd0vYvwZbxz8wBDZ4zosBB4pkApA8uqqUT17f5F4rnR4Wx-yc4Eg/exec";
+const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycby1WaE97d4sux18_dOLT-LTzFb24QGQ5OZ_ojTjeSLnkagRlFIbqro0yrr8Is3A5NYROg/exec";
 
 const CHECKOUT = { /* ... seus links ... */ 
   manual:"https://seu-checkout.com/manual",
