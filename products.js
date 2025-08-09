@@ -12,7 +12,7 @@ const CHECKOUT = {
   mentoria_sem_material_trimestral: "https://seu-checkout.com/mentoria-sem-material-trimestral"
 };
 
-/* ===== DADOS ESTÁTICOS DOS PRODUTOS (SEM IMAGENS) ===== */
+/* ===== DADOS ESTÁTICOS (sem imagens) ===== */
 const PRODUCTS = {
   "manual-do-aprovado": {
     slug: "manual-do-aprovado",
@@ -83,12 +83,10 @@ function renderProduct() {
     if (wa) wa.style.display = "none";
     return;
   }
-
-  if (wa) wa.href = WA_LINK;
+  if (wa) wa.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
 
   const p = PRODUCTS[slug];
 
-  // Cabeçalho SEM imagem
   const head = `
     <div class="glass-panel panel-gradient">
       <h1 class="product-title">${p.title}</h1>
@@ -107,8 +105,8 @@ function renderProduct() {
   if (p.slug === "mentoria") {
     ctasRow = `
       <div class="flex flex-col md:flex-row flex-wrap gap-3">
-        <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Contratar agora</a>
-        <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
+        <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}" target="_blank" rel="noopener">Contratar agora</a>
+        <a class="btn-outline auto-shine w-full md:w-auto" href="https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
       </div>
     `;
   } else {
@@ -119,7 +117,7 @@ function renderProduct() {
       <div class="flex flex-col md:flex-row flex-wrap gap-3">
         <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
         ${sampleBtn}
-        <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
+        <a class="btn-outline auto-shine w-full md:w-auto" href="https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
       </div>
     `;
   }
@@ -138,7 +136,7 @@ function renderProduct() {
     </div>
   `;
 
-  // Shine nos CTAs
+  // Shine loop
   (function autoShineLoop(){
     const ctas = document.querySelectorAll('.btn-primary, .btn-outline');
     let idx = 0;
