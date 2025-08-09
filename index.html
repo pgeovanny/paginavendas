@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PG Concursos — Dominando o Edital</title>
   <meta name="description" content="PG Concursos - Dominando o Edital. Materiais e mentoria para acelerar sua aprovação.">
-  <!-- Seu CSS original -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -62,7 +61,7 @@
   <!-- Lógica de produtos (catálogo híbrido: 3 padrões + planilha) -->
   <script src="products.js"></script>
 
-  <!-- Filtro (apenas comportamento visual; não altera layout) -->
+  <!-- Filtro (comportamento visual; mantém o layout validado) -->
   <script>
     document.addEventListener('click', (e)=>{
       const btn = e.target.closest('.filter-chip');
@@ -75,7 +74,7 @@
         b.classList.remove('chip-active');
       });
 
-      // se já estava ativo, limpa filtro (mostra tudo)
+      // se já estava ativo, limpa o filtro (mostra tudo)
       if(active){
         document.querySelectorAll('.home-card').forEach(c=> c.style.display = '');
         return;
