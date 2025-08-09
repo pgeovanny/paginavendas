@@ -13,9 +13,19 @@ const CHECKOUT = {
 };
 
 /* ===== ENDPOINT DO GOOGLE APPS SCRIPT (SEU WEB APP) ===== */
-const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbzU4qogQg789YfKdzzH0NT16-s6V6hEABbiiJDez_QxQwXxtSONCYVveCWOW483qrWSTw/exec";
+const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbwNxVsDc992m5EKGtfd0vYvwZbxz8wBDZ4zosBB4pkApA8uqqUT17f5F4rnR4Wx-yc4Eg/exec";
 
-/* ===== DADOS ESTÁTICOS (sem imagens) ===== */
+/* ===== UID local (1 voto por usuário/navegador) ===== */
+function getUID(){
+  let uid = localStorage.getItem('pg_uid');
+  if(!uid){
+    uid = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem('pg_uid', uid);
+  }
+  return uid;
+}
+
+/* ===== DADOS ESTÁTICOS ===== */
 const PRODUCTS = {
   "manual-do-aprovado": {
     slug: "manual-do-aprovado",
@@ -75,29 +85,65 @@ function qs(name) {
 }
 function fmt(n){ return typeof n === "number" ? n : parseInt(n || "0", 10); }
 
-/* ===== VOTOS: integração com Google Apps Script (GET) ===== */
+/* ===== VOTOS: integração com GAS ===== */
 async function fetchVotes(slug){
   try{
-    const url = `${GAS_ENDPOINT_BASE}?action=stats&slug=${encodeURIComponent(slug)}`;
+    const uid = getUID();
+    const url = `${GAS_ENDPOINT_BASE}?action=stats&slug=${encodeURIComponent(slug)}&uid=${encodeURIComponent(uid)}`;
     const res = await fetch(url, { method: "GET" });
     if(!res.ok) throw new Error("HTTP "+res.status);
-    return await res.json(); // { up: number, down: number }
+    return await res.json(); // { up, down, my }
   }catch(e){
     console.warn("Falha ao buscar votos:", e);
-    return { up: 0, down: 0 };
+    return { up: 0, down: 0, my: null };
   }
 }
-async function sendVote(slug, dir){ // dir: "up" | "down"
+async function sendVote(slug, dir, reason){
   try{
-    const url = `${GAS_ENDPOINT_BASE}?action=vote&slug=${encodeURIComponent(slug)}&dir=${encodeURIComponent(dir)}`;
+    const uid = getUID();
+    const url = `${GAS_ENDPOINT_BASE}?action=vote&slug=${encodeURIComponent(slug)}&dir=${encodeURIComponent(dir)}&uid=${encodeURIComponent(uid)}&reason=${encodeURIComponent(reason||'')}`;
     const res = await fetch(url, { method: "GET" });
     if(!res.ok) throw new Error("HTTP "+res.status);
-    return await res.json(); // { up, down, [rate_limited] }
+    return await res.json(); // { up, down, my, status }
   }catch(e){
     console.warn("Falha ao votar:", e);
     return null;
   }
 }
+
+/* ===== MINI MODAL “motivo” ===== */
+function ensureModal(){
+  if(document.getElementById('vote-modal')) return;
+  const div = document.createElement('div');
+  div.id = 'vote-modal';
+  div.innerHTML = `
+    <style>
+      #vote-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5);z-index:9999}
+      #vote-modal.open{display:flex}
+      .vm-card{width:min(92vw,520px);background:rgba(10,20,50,.9);border:1px solid rgba(173,197,255,.2);border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.6);padding:16px}
+      .vm-title{font-weight:800;margin-bottom:8px}
+      .vm-text{font-size:.95rem;opacity:.9;margin-bottom:10px}
+      .vm-ta{width:100%;min-height:90px;border:1px solid rgba(173,197,255,.25);background:rgba(255,255,255,.05);border-radius:10px;color:#fff;padding:10px;resize:vertical}
+      .vm-actions{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+      .vm-btn{padding:.7rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);font-weight:800;color:#fff;cursor:pointer}
+      .vm-btn:hover{background:rgba(255,255,255,.12)}
+      .vm-primary{background:#204489;border-color:rgba(255,255,255,.12)}
+      .vm-primary:hover{background:#18356f}
+    </style>
+    <div class="vm-card">
+      <div class="vm-title">Não curti — conte rapidamente o motivo</div>
+      <div class="vm-text">Sua resposta ajuda a melhorar o material. (máx. 140 caracteres)</div>
+      <textarea id="vm-reason" class="vm-ta" maxlength="140" placeholder="Ex.: A diagramação me confundiu"></textarea>
+      <div class="vm-actions">
+        <button id="vm-cancel" class="vm-btn">Cancelar</button>
+        <button id="vm-send" class="vm-btn vm-primary">Enviar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(div);
+}
+function openModal(){ ensureModal(); document.getElementById('vote-modal').classList.add('open'); }
+function closeModal(){ const el=document.getElementById('vote-modal'); if(el) el.classList.remove('open'); }
 
 /* ===== RENDER ===== */
 function renderProduct() {
@@ -111,7 +157,6 @@ function renderProduct() {
     if (wa) wa.style.display = "none";
     return;
   }
-
   if (wa) wa.href = WA_LINK;
 
   const p = PRODUCTS[slug];
@@ -143,7 +188,6 @@ function renderProduct() {
       ? `<a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
       : "";
 
-    // bloco de votos (like/dislike)
     const votesBlock = `
       <div class="votes-wrap" data-slug="${p.slug}">
         <button class="vote-btn vote-up" type="button" aria-label="Gostei da amostra">
@@ -183,32 +227,71 @@ function renderProduct() {
     </div>
   `;
 
-  // Inicializa votos (busca no backend)
+  // Votos: inicializa estado + handlers
   const votesWrap = document.querySelector(".votes-wrap");
   if(votesWrap){
     const slug = votesWrap.dataset.slug;
-    fetchVotes(slug).then(({up, down})=>{
-      const upEl = votesWrap.querySelector('[data-role="up"]');
-      const downEl = votesWrap.querySelector('[data-role="down"]');
-      if(upEl) upEl.textContent = fmt(up);
-      if(downEl) downEl.textContent = fmt(down);
+    const upBtn = votesWrap.querySelector('.vote-up');
+    const downBtn = votesWrap.querySelector('.vote-down');
+    const upEl = votesWrap.querySelector('[data-role="up"]');
+    const downEl = votesWrap.querySelector('[data-role="down"]');
+
+    function setActive(which){ // 'up'|'down'|null
+      upBtn.classList.toggle('voted', which==='up');
+      downBtn.classList.toggle('voted', which==='down');
+    }
+    function setDisabled(dis){
+      upBtn.disabled = !!dis; 
+      downBtn.disabled = !!dis;
+    }
+
+    // Busca contagens + meu voto
+    fetchVotes(slug).then(({up,down,my})=>{
+      upEl.textContent = fmt(up);
+      downEl.textContent = fmt(down);
+      setActive(my||null);
     });
-    votesWrap.addEventListener("click", async (e)=>{
-      const btn = e.target.closest(".vote-btn");
-      if(!btn) return;
-      const dir = btn.classList.contains("vote-up") ? "up" : "down";
-      btn.classList.add("is-loading");
-      const result = await sendVote(slug, dir);
-      btn.classList.remove("is-loading");
-      if(result){
-        const upEl = votesWrap.querySelector('[data-role="up"]');
-        const downEl = votesWrap.querySelector('[data-role="down"]');
-        if(upEl) upEl.textContent = fmt(result.up);
-        if(downEl) downEl.textContent = fmt(result.down);
-        // feedback visual rápido
-        btn.classList.add("voted");
-        setTimeout(()=> btn.classList.remove("voted"), 800);
+
+    // click handlers
+    upBtn.addEventListener('click', async ()=>{
+      setDisabled(true);
+      const res = await sendVote(slug, 'up', '');
+      setDisabled(false);
+      if(res){
+        upEl.textContent = fmt(res.up);
+        downEl.textContent = fmt(res.down);
+        setActive('up');
       }
+    });
+
+    downBtn.addEventListener('click', async ()=>{
+      ensureModal();
+      openModal();
+      const vm = document.getElementById('vote-modal');
+      const ta = document.getElementById('vm-reason');
+      ta.value = '';
+      return new Promise(resolve=>{
+        const onCancel = ()=>{ vm.removeEventListener('click', onClick); closeModal(); resolve(); };
+        const onSend = async ()=>{
+          const reason = ta.value.trim().slice(0,140);
+          setDisabled(true);
+          const res = await sendVote(slug, 'down', reason);
+          setDisabled(false);
+          closeModal();
+          if(res){
+            upEl.textContent = fmt(res.up);
+            downEl.textContent = fmt(res.down);
+            setActive('down');
+          }
+          resolve();
+        };
+        function onClick(e){
+          if(e.target.id==='vm-cancel') onCancel();
+          if(e.target.id==='vm-send') onSend();
+          if(e.target===vm) onCancel(); // clique fora fecha
+        }
+        vm.addEventListener('click', onClick, { once:false });
+      });
     });
   }
 
