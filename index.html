@@ -5,113 +5,84 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PG Concursos — Dominando o Edital</title>
   <meta name="description" content="PG Concursos - Dominando o Edital. Materiais e mentoria para acelerar sua aprovação.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
-  <style>
-    :root{
-      --blue-900:#0b1840; --blue-800:#11255f; --blue-700:#18356f; --blue-600:#204489;
-      --white:#fff; --muted:#bcd0ff; --glass:rgba(255,255,255,.06);
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,#07112c 0%,#0e1f4b 55%,#142a66 100%);color:var(--white)}
-    a{color:inherit;text-decoration:none}
-    .site-header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(6,12,32,.85),rgba(6,12,32,.55));backdrop-filter:blur(6px);border-bottom:1px solid rgba(173,197,255,.12)}
-    .header-wrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:10px}
-    .brand{font-weight:800;letter-spacing:.3px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-    .brand .x{opacity:.8;font-weight:600}
-    .brand .a,.brand .b{padding:6px 10px;border-radius:10px;background:linear-gradient(135deg,rgba(32,68,137,.9),rgba(20,42,102,.9));box-shadow:0 6px 24px rgba(0,0,0,.35), inset 0 0 1px rgba(255,255,255,.25)}
-    .container{max-width:1100px;margin:0 auto;padding:24px 16px 56px}
-    .hero{margin-top:22px;border:1px solid rgba(173,197,255,.18);border-radius:18px;padding:28px;position:relative;overflow:hidden;background:
-      radial-gradient(1200px 1200px at -20% -20%, rgba(80,120,255,.25), transparent 60%),
-      radial-gradient(900px 900px at 120% -20%, rgba(64,160,255,.18), transparent 60%),
-      linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      box-shadow:0 30px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.06)}
-    .hero h1{font-size:clamp(22px,4.5vw,36px);line-height:1.15;margin:0 0 8px;font-weight:800;letter-spacing:.2px}
-    .hero .pulse{display:inline-block;position:relative}
-    .hero .pulse::after{content:"";position:absolute;inset:-2px;border-radius:8px;box-shadow:0 0 0 0 rgba(127,178,255,.55);animation:slowPulse 2.6s ease-in-out infinite}
-    @keyframes slowPulse{0%{box-shadow:0 0 0 0 rgba(127,178,255,.55)}50%{box-shadow:0 0 0 14px rgba(127,178,255,0)}100%{box-shadow:0 0 0 0 rgba(127,178,255,0)}}
-    .hero p{margin:0;color:var(--muted)}
-    .filter-wrap{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
-    .filter{position:relative;padding:10px 14px;border-radius:12px;background:var(--glass);border:1px solid rgba(173,197,255,.18);cursor:pointer;user-select:none}
-    .filter .energy{position:absolute;inset:-2px;border-radius:14px;pointer-events:none}
-    .filter .energy::before{content:"";position:absolute;inset:0;border-radius:inherit;border:2px solid transparent;background:
-      conic-gradient(from 0deg,rgba(127,178,255,.7), rgba(64,160,255,.3), rgba(127,178,255,.7)) border-box;
-      -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
-      animation:spin 7s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .grid-products{display:grid;gap:14px;margin-top:22px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-    .home-card{display:block;border:1px solid rgba(173,197,255,.18);border-radius:16px;padding:16px;background:
-      linear-gradient(170deg,rgba(255,255,255,.05),rgba(255,255,255,.03));box-shadow:0 12px 35px rgba(0,0,0,.35)}
-    .home-card-title{font-weight:800;margin-bottom:6px}
-    .home-card-sub{color:var(--muted);font-size:.95rem}
-    .site-footer{padding:18px 16px;border-top:1px solid rgba(173,197,255,.12);background:rgba(6,12,32,.4);backdrop-filter:blur(6px)}
-    .footer-social{display:flex;gap:14px;justify-content:center}
-    .footer-social a{display:inline-flex;width:28px;height:28px;opacity:.6;transition:.2s}
-    .footer-social a:hover{opacity:1;transform:translateY(-1px)}
-    @media (max-width:560px){ .brand .a,.brand .b{padding:5px 8px} }
-  </style>
 </head>
 <body>
+  <!-- Header fixo -->
   <header class="site-header">
     <div class="header-wrap">
       <div class="brand">
-        <span class="a">PG Concursos</span>
-        <span class="x">×</span>
-        <span class="b">Dominando o Edital</span>
+        <span class="brand-pill">PG Concursos</span>
+        <span class="brand-x">×</span>
+        <span class="brand-pill">Dominando o Edital</span>
       </div>
-      <nav class="nav"></nav>
     </div>
   </header>
 
   <main class="container">
-    <section class="hero">
-      <h1><span class="pulse">Você está mais próximo da sua aprovação.</span></h1>
-      <p>Escolha seu caminho e acelere seus resultados.</p>
+    <!-- Hero -->
+    <section class="hero glass">
+      <h1 class="hero-title">
+        <span class="pulse">Você está mais próximo da sua aprovação.</span>
+      </h1>
+      <p class="hero-sub">Escolha seu caminho e acelere seus resultados.</p>
 
-      <div class="filter-wrap" aria-label="Categorias">
-        <div class="filter" data-filter="materiais">
-          <span class="energy"></span>
-          Materiais (PDF)
-        </div>
-        <div class="filter" data-filter="mentorias">
-          <span class="energy"></span>
-          Mentorias
-        </div>
+      <!-- Filtros com ENERGIA correndo ao redor de CADA botão -->
+      <div class="filters">
+        <button class="filter-chip" data-type="produto" aria-pressed="false">
+          <span class="chip-energy"></span>
+          <span>Materiais (PDF)</span>
+        </button>
+        <button class="filter-chip" data-type="mentoria" aria-pressed="false">
+          <span class="chip-energy"></span>
+          <span>Mentorias</span>
+        </button>
       </div>
     </section>
 
-    <section>
-      <div id="home-products" class="grid-products"></div>
-    </section>
+    <!-- Cards dos produtos (renderizados pelo products.js) -->
+    <section class="products-grid" id="home-products"></section>
   </main>
 
   <footer class="site-footer">
     <div class="footer-social">
       <a href="https://instagram.com/pg.concursos" target="_blank" rel="noopener" aria-label="PG Concursos Instagram">
-        <img src="insta-icon.svg" alt="">
+        <span class="ig-dot"></span>
       </a>
       <a href="https://instagram.com/dominandooedital" target="_blank" rel="noopener" aria-label="Dominando o Edital Instagram">
-        <img src="insta-icon.svg" alt="">
+        <span class="ig-dot"></span>
       </a>
     </div>
   </footer>
 
+  <div id="pg-loading" class="pg-loading"><div class="pg-spinner"></div></div>
   <script src="products.js"></script>
   <script>
-    // filtro visual (apenas highlight; a lista vem completa do JS)
-    document.querySelectorAll('.filter').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        const type = btn.dataset.filter;
-        document.querySelectorAll('.home-card').forEach(card=>{
-          const t = card.getAttribute('data-type');
-          card.style.display = (type==='materiais' && t==='produto') || (type==='mentorias' && t==='mentoria') ? '' : '';
-          // Mantemos todos visíveis (UX simples); se quiser, escondo os outros.
-        });
+    // Filtro visual (filtra por data-type sem mexer no layout)
+    document.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.filter-chip');
+      if(!btn) return;
+      // toggle pressed
+      const active = btn.getAttribute('aria-pressed') === 'true';
+      // desliga todos e liga só o clicado (modo single)
+      document.querySelectorAll('.filter-chip').forEach(b=>{
+        b.setAttribute('aria-pressed','false');
+        b.classList.remove('chip-active');
       });
+      if(!active){
+        btn.setAttribute('aria-pressed','true');
+        btn.classList.add('chip-active');
+      }
+      const type = btn.dataset.type;
+      const allCards = document.querySelectorAll('.home-card');
+      if(active){ // se clicou pra desativar, mostra tudo
+        allCards.forEach(c=> c.style.display = '');
+      }else{
+        allCards.forEach(c=>{
+          const t = c.getAttribute('data-type') || 'produto';
+          c.style.display = (t === type) ? '' : 'none';
+        });
+      }
     });
   </script>
 </body>
