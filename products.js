@@ -4,7 +4,7 @@ const WHATSAPP_MSG = encodeURIComponent("Olá! Tenho dúvidas / Quero contratar 
 const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
 
 // Web App do Apps Script
-const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbxjSDeucPCfr1iRBkXRqhflrTWvqTBt5u6gCoZragenVN74t8t91aY2cmrDy-8paBMUoQ/exec";
+const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbwBSnK9tD_8LYAdhS4a65qNTtsST1qdmVOfverHqT0r_7nvluDc4JMiNQk8p7ZT_-po4w/exec";
 
 const CHECKOUT = {
   manual: "https://seu-checkout.com/manual",
