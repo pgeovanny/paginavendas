@@ -20,7 +20,7 @@
   <!-- Header fixo -->
   <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-brand-900/70 bg-brand-900/90 border-b border-white/10 glow-top">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-      <!-- Logo responsiva: sempre mostra os dois nomes; quebra elegante no mobile estreito -->
+      <!-- Logo responsiva: sempre mostra os dois nomes -->
       <a href="index.html" class="brand-wrap premium-logo">
         <span class="brand-a">PG Concursos</span>
         <span class="brand-x">×</span>
@@ -41,7 +41,7 @@
     </div>
   </header>
 
-  <!-- Gradiente/relevo do Hero -->
+  <!-- Hero -->
   <section class="relative overflow-hidden">
     <div class="premium-glow" aria-hidden="true"></div>
     <div class="max-w-6xl mx-auto px-4 py-14 md:py-20 text-center">
@@ -57,16 +57,16 @@
     <!-- Materiais -->
     <div class="acc-item glass-section section-gradient">
       <button class="acc-trigger energy-border" data-target="acc-materiais">
-        <!-- SVG de energia (orbita a borda do botão) -->
+        <!-- SVG de energia (loop lento ~8s) -->
         <svg class="energy-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <defs>
-            <linearGradient id="orbit" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#6ea8ff"/>
-              <stop offset="50%" stop-color="#9aaeff"/>
-              <stop offset="100%" stop-color="#6ea8ff"/>
+            <linearGradient id="orbit-a" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#6EA8FF"/>
+              <stop offset="50%" stop-color="#AFC6FF"/>
+              <stop offset="100%" stop-color="#6EA8FF"/>
             </linearGradient>
           </defs>
-          <rect class="energy-stroke" x="1.5" y="1.5" width="97" height="97" rx="14" ry="14" fill="none" stroke="url(#orbit)" stroke-width="2"/>
+          <rect class="energy-stroke" x="1.5" y="1.5" width="97" height="97" rx="14" ry="14" fill="none" stroke="url(#orbit-a)" stroke-width="2"/>
         </svg>
 
         <div class="flex items-center gap-3 relative z-[1]">
@@ -101,8 +101,14 @@
     <div class="acc-item glass-section section-gradient">
       <button class="acc-trigger energy-border" data-target="acc-mentoria">
         <svg class="energy-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <use href="#rect-template" />
-          <rect class="energy-stroke" x="1.5" y="1.5" width="97" height="97" rx="14" ry="14" fill="none" stroke="url(#orbit)" stroke-width="2"/>
+          <defs>
+            <linearGradient id="orbit-b" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#6EA8FF"/>
+              <stop offset="50%" stop-color="#AFC6FF"/>
+              <stop offset="100%" stop-color="#6EA8FF"/>
+            </linearGradient>
+          </defs>
+          <rect class="energy-stroke" x="1.5" y="1.5" width="97" height="97" rx="14" ry="14" fill="none" stroke="url(#orbit-b)" stroke-width="2"/>
         </svg>
 
         <div class="flex items-center gap-3 relative z-[1]">
