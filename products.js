@@ -1,10 +1,10 @@
 /* ===== CONFIG ===== */
-const WHATSAPP_NUMBER = "5599999999999"; // <- ajuste
+const WHATSAPP_NUMBER = "5599999999999"; // ajuste
 const WHATSAPP_MSG = encodeURIComponent("Olá! Tenho dúvidas / Quero contratar agora.");
 const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
 
-// Web App do Apps Script (seu /exec atual)
-const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbwNxVsDc992m5EKGtfd0vYvwZbxz8wBDZ4zosBB4pkApA8uqqUT17f5F4rnR4Wx-yc4Eg/exec";
+// Seu Web App do Apps Script (/exec)
+const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbyPf6Cwfh0Q6RGE11u8Pz0uj5jXPDjfDCC7nImy139Smz0OaywfhSFcnlNvwFiqIEzXZA/exec";
 
 /* ===== UID ===== */
 function getUID(){
@@ -16,30 +16,7 @@ function getUID(){
 /* ===== HELPERS ===== */
 function qs(n){ return new URLSearchParams(location.search).get(n); }
 function fmt(n){ return typeof n==='number'?n:parseInt(n||'0',10); }
-function showLoading(){ const el=document.getElementById('pg-loading'); if(el) el.classList.add('open'); }
-function hideLoading(){ const el=document.getElementById('pg-loading'); if(el) el.classList.remove('open'); }
-
-/* ===== MINI CSS (loader + micro animações, caso a página não tenha) ===== */
-(function ensureLoader(){
-  if(document.getElementById('pg-loading')) return;
-  const overlay=document.createElement('div'); overlay.id='pg-loading';
-  overlay.className='pg-loading';
-  overlay.innerHTML='<div class="pg-spinner"></div>';
-  const css = `
-    .pg-loading{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,12,32,.45);backdrop-filter:blur(2px);z-index:9999}
-    .pg-loading.open{display:flex}
-    .pg-spinner{width:42px;height:42px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:#7fb2ff;animation:pgspin 0.9s linear infinite}
-    @keyframes pgspin{to{transform:rotate(360deg)}}
-    .vote-btn.voted{outline:2px solid rgba(127,178,255,.6); box-shadow:0 0 0 3px rgba(127,178,255,.15) inset;}
-    .vote-btn:disabled{opacity:.6;cursor:not-allowed}
-    .shine-now{position:relative;overflow:hidden}
-    .shine-now::after{content:"";position:absolute;inset:0;transform:translateX(-120%);background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.12) 50%,transparent 100%);animation:sh 1.1s ease}
-    @keyframes sh{to{transform:translateX(120%)}}
-  `;
-  const style=document.createElement('style'); style.textContent=css;
-  document.head.appendChild(style);
-  document.body.appendChild(overlay);
-})();
+function $id(id){ return document.getElementById(id); }
 
 /* ===== ENDPOINTS GAS ===== */
 async function apiProducts(){ const r=await fetch(`${GAS_ENDPOINT_BASE}?action=products`); if(!r.ok) throw new Error(r.status); return r.json(); }
@@ -47,7 +24,7 @@ async function apiProduct(slug){ const r=await fetch(`${GAS_ENDPOINT_BASE}?actio
 async function apiStats(slug){ const r=await fetch(`${GAS_ENDPOINT_BASE}?action=stats&slug=${encodeURIComponent(slug)}&uid=${encodeURIComponent(getUID())}`); if(!r.ok) throw new Error(r.status); return r.json(); }
 async function apiVote(slug,dir,reason){ const r=await fetch(`${GAS_ENDPOINT_BASE}?action=vote&slug=${encodeURIComponent(slug)}&uid=${encodeURIComponent(getUID())}&dir=${encodeURIComponent(dir)}&reason=${encodeURIComponent(reason||'')}`); if(!r.ok) throw new Error(r.status); return r.json(); }
 
-/* ===== PRODUTOS PADRÃO (garantia dos 3 originais) ===== */
+/* ===== PRODUTOS PADRÃO (os 3 originais) ===== */
 const DEFAULT_PRODUCTS = [
   {
     slug: "manual-do-aprovado",
@@ -103,13 +80,12 @@ const DEFAULT_PRODUCTS = [
   }
 ];
 
-/* ===== MERGE: planilha sobrescreve/soma aos padrões ===== */
+/* ===== MERGE (planilha > padrão) ===== */
 function mergeCatalog(defaults, remoteList){
   const map = new Map();
-  defaults.forEach(p=> map.set(p.slug, {...p}));
+  defaults.forEach(p => map.set(p.slug, {...p}));
   (remoteList||[]).forEach(r=>{
     const current = map.get(r.slug) || {};
-    // se vier do GAS um produto, preenche/override campos
     map.set(r.slug, {
       ...current,
       slug: r.slug || current.slug,
@@ -119,49 +95,18 @@ function mergeCatalog(defaults, remoteList){
       price: (r.price!==undefined ? r.price : current.price) || '',
       sample: (r.sample!==undefined ? r.sample : current.sample) || '',
       checkout: (r.checkout!==undefined ? r.checkout : current.checkout) || '',
-      copy: current.copy // copy detalhada: vem do endpoint /product
+      copy: current.copy // copy completa vem do /product
     });
-    // anexar contadores (se o GAS devolveu)
     if(r.up!=null || r.down!=null){
-      map.get(r.slug).votes = {up: fmt(r.up||0), down: fmt(r.down||0)};
+      map.get(r.slug).votes = { up: fmt(r.up||0), down: fmt(r.down||0) };
     }
   });
   return Array.from(map.values());
 }
 
-/* ===== HOME ===== */
-async function renderHome(){
-  const list = document.getElementById('home-products');
-  if(!list) return;
-
-  showLoading();
-  let data=null, items=[];
-  try{
-    // tenta carregar da planilha
-    data = await apiProducts();
-    items = mergeCatalog(DEFAULT_PRODUCTS, data.items);
-  }catch(e){
-    console.warn('Falha ao carregar do GAS, usando apenas default:', e);
-    items = DEFAULT_PRODUCTS;
-  }finally{
-    hideLoading();
-  }
-
-  if(!items.length){ list.innerHTML = `<div class="text-blue-100/80">Sem produtos no momento.</div>`; return; }
-
-  list.innerHTML = items.map(p=>{
-    const href = `produto.html?p=${encodeURIComponent(p.slug)}`;
-    return `
-    <a class="home-card hover:scale-[1.01] transition" href="${href}" data-type="${p.type||'produto'}">
-      <div class="home-card-title">${p.title}</div>
-      <div class="home-card-sub">${p.subtitle}</div>
-    </a>`;
-  }).join('');
-}
-
 /* ===== MODAL (motivo do downvote) ===== */
 function ensureModal(){
-  if(document.getElementById('vote-modal')) return;
+  if($id('vote-modal')) return;
   const div=document.createElement('div');
   div.id='vote-modal';
   div.innerHTML=`
@@ -189,12 +134,12 @@ function ensureModal(){
   </div>`;
   document.body.appendChild(div);
 }
-function openModal(){ ensureModal(); document.getElementById('vote-modal').classList.add('open'); }
-function closeModal(){ const el=document.getElementById('vote-modal'); if(el) el.classList.remove('open'); }
+function openModal(){ ensureModal(); $id('vote-modal').classList.add('open'); }
+function closeModal(){ const el=$id('vote-modal'); if(el) el.classList.remove('open'); }
 function askReason(){
   return new Promise(resolve=>{
     ensureModal(); openModal();
-    const vm=document.getElementById('vote-modal'); const ta=document.getElementById('vm-reason'); ta.value='';
+    const vm=$id('vote-modal'); const ta=$id('vm-reason'); ta.value='';
     const onClick=(ev)=>{
       if(ev.target.id==='vm-cancel' || ev.target===vm){ vm.removeEventListener('click',onClick); closeModal(); resolve(''); }
       if(ev.target.id==='vm-send'){ vm.removeEventListener('click',onClick); const r=ta.value.trim().slice(0,140); closeModal(); resolve(r); }
@@ -203,84 +148,104 @@ function askReason(){
   });
 }
 
-/* ===== PRODUTO ===== */
+/* ===== HOME (mantém seu layout) ===== */
+async function renderHome(){
+  const list = $id('home-products'); // container que você já tinha
+  if(!list) return;
+
+  // tenta planilha; cai para padrão se falhar
+  let items = [];
+  try{
+    const data = await apiProducts();
+    items = mergeCatalog(DEFAULT_PRODUCTS, data.items);
+  }catch(e){
+    items = DEFAULT_PRODUCTS;
+  }
+
+  // mesmo markup que você usava para os cards
+  list.innerHTML = items.map(p=>{
+    const href = `produto.html?p=${encodeURIComponent(p.slug)}`;
+    return `
+      <a class="home-card" href="${href}" data-type="${p.type||'produto'}">
+        <div class="home-card-title">${p.title}</div>
+        <div class="home-card-sub">${p.subtitle}</div>
+      </a>
+    `;
+  }).join('');
+}
+
+/* ===== PRODUTO (mantém o teu markup/efeitos) ===== */
 async function renderProduct(){
-  const root=document.getElementById('product-root');
-  if(!root) return;
-  const wa=document.getElementById('whats-float');
+  const root=$id('product-root'); if(!root) return;
+  const wa=$id('whats-float'); if(wa) wa.href = WA_LINK;
   const slug=qs('p');
   if(!slug){ root.innerHTML=`<div class="text-blue-50/90">Produto não encontrado. <a class="underline" href="index.html">Voltar</a></div>`; if(wa) wa.style.display='none'; return; }
-  if(wa) wa.href = WA_LINK;
 
-  showLoading();
-
-  // tentamos buscar do GAS (que já devolve copy agregada e contagem); se falhar, cai no default
+  // busca principal pelo GAS; fallback para DEFAULT
   let p=null;
   try{
     p = await apiProduct(slug);
-    if(p && p.error){ throw new Error('not found in GAS'); }
+    if(p && p.error) throw new Error('not found');
   }catch(e){
-    // fallback: pegar do default + contagem separada
     const local = DEFAULT_PRODUCTS.find(x=>x.slug===slug);
-    if(!local){ hideLoading(); root.innerHTML=`<div class="text-blue-50/90">Produto não encontrado. <a class="underline" href="index.html">Voltar</a></div>`; return; }
+    if(!local){ root.innerHTML=`<div class="text-blue-50/90">Produto não encontrado. <a class="underline" href="index.html">Voltar</a></div>`; return; }
     p = {...local};
-    try{
-      const st = await apiStats(slug);
-      p.votes = {up:st.up||0, down:st.down||0};
-    }catch(_){}
+    try{ const st=await apiStats(slug); p.votes={up:st.up||0,down:st.down||0}; }catch(_){}
   }
 
+  // cabeçalho/hero do produto (mesmo padrão que você tinha)
   const head=`
-  <div class="glass-panel panel-gradient">
-    <h1 class="product-title">${p.title}</h1>
-    <p class="product-subtitle">${p.subtitle}</p>
-    <div class="status-badge mt-3 inline-flex items-center gap-2 rounded-xl px-3 py-2 soft-shadow">
-      <span class="status-dot status-dot--green"></span>
-      <span class="text-sm md:text-[.95rem] text-blue-50/92">Compra garantida • Entrega imediata</span>
-    </div>
-  </div>`;
+    <div class="glass-panel panel-gradient">
+      <h1 class="product-title">${p.title}</h1>
+      <p class="product-subtitle">${p.subtitle}</p>
+      <div class="status-badge mt-3 inline-flex items-center gap-2 rounded-xl px-3 py-2 soft-shadow">
+        <span class="status-dot status-dot--green"></span>
+        <span class="text-sm md:text-[.95rem] text-blue-50/92">Compra garantida • Entrega imediata</span>
+      </div>
+    </div>`;
 
-  const copyArray = Array.isArray(p.copy) ? p.copy : [];
-  const copyHtml= copyArray.map(t=>`<p>${t}</p>`).join('');
-  const priceHtml=p.price?`<div class="product-price">Preço: <span>${p.price}</span></div>`:'';
+  const copyArr = Array.isArray(p.copy)?p.copy:[];
+  const copyHtml = copyArr.map(t=>`<p>${t}</p>`).join('');
+  const priceHtml = p.price ? `<div class="product-price">Preço: <span>${p.price}</span></div>` : '';
 
   const sampleBtn = p.sample
     ? `<a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
     : "";
 
-  // bloco de votos (para todos os tipos, inclusive mentoria)
   const votesBlock=`
     <div class="votes-wrap" data-slug="${p.slug}">
-      <button class="vote-btn vote-up" type="button"><span class="vote-icon">👍</span><span class="vote-text">Gostei</span> <span class="vote-count" data-role="up">${fmt(p.votes?.up||0)}</span></button>
-      <button class="vote-btn vote-down" type="button"><span class="vote-icon">👎</span><span class="vote-text">Não curti</span> <span class="vote-count" data-role="down">${fmt(p.votes?.down||0)}</span></button>
+      <button class="vote-btn vote-up" type="button"><span>👍</span><span class="vote-text">Gostei</span> <span class="vote-count" data-role="up">${fmt(p.votes?.up||0)}</span></button>
+      <button class="vote-btn vote-down" type="button"><span>👎</span><span class="vote-text">Não curti</span> <span class="vote-count" data-role="down">${fmt(p.votes?.down||0)}</span></button>
     </div>`;
 
-  // CTAs dependendo do tipo
   let ctasRow='';
   if((p.type||'produto')==='mentoria'){
-    ctasRow=`<div class="flex flex-col md:flex-row flex-wrap gap-3">
-      <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Contratar agora</a>
-      <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
-    </div>${votesBlock}`;
+    ctasRow = `
+      <div class="flex flex-col md:flex-row flex-wrap gap-3">
+        <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Contratar agora</a>
+        <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
+      </div>${votesBlock}`;
   }else{
-    ctasRow=`<div class="flex flex-col md:flex-row flex-wrap gap-3">
-      <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.checkout||'#'}" target="_blank" rel="noopener">Comprar Agora</a>
-      ${sampleBtn}
-      <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
-    </div>${votesBlock}`;
+    ctasRow = `
+      <div class="flex flex-col md:flex-row flex-wrap gap-3">
+        <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.checkout||'#'}" target="_blank" rel="noopener">Comprar Agora</a>
+        ${sampleBtn}
+        <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
+      </div>${votesBlock}`;
   }
 
-  root.innerHTML=`${head}
+  root.innerHTML = `${head}
     <div class="mt-8 space-y-6 glass-section section-gradient product-copy">
       ${copyHtml}
       ${priceHtml}
-      <div class="mt-4">${ctasRow}<div class="mt-3"><a class="btn-ghost" href="index.html">Voltar</a></div></div>
+      <div class="mt-4">
+        ${ctasRow}
+        <div class="mt-3"><a class="btn-ghost" href="index.html">Voltar</a></div>
+      </div>
     </div>`;
 
-  hideLoading();
-
-  // ===== Votos (UI otimista + loading curto) =====
-  const vw=document.querySelector('.votes-wrap');
+  // Votos com UI otimista (sem mudar visual)
+  const vw = document.querySelector('.votes-wrap');
   if(vw){
     const slug=vw.dataset.slug;
     const upBtn=vw.querySelector('.vote-up');
@@ -289,7 +254,6 @@ async function renderProduct(){
     const downEl=vw.querySelector('[data-role="down"]');
     let busy=false;
 
-    // estado inicial (confirma my)
     apiStats(slug).then(({my})=>{
       upBtn.classList.toggle('voted', my==='up');
       downBtn.classList.toggle('voted', my==='down');
@@ -300,7 +264,7 @@ async function renderProduct(){
 
     async function handleVote(dir){
       if(busy) return; busy=true; setDisabled(true);
-      // otimista
+
       const prev = { up: fmt(upEl.textContent), down: fmt(downEl.textContent), my: (upBtn.classList.contains('voted')?'up': (downBtn.classList.contains('voted')?'down':null)) };
       if(dir==='up'){
         if(prev.my==='down'){ downEl.textContent = Math.max(0, prev.down-1); }
@@ -312,35 +276,24 @@ async function renderProduct(){
         setActive('down');
       }
 
-      // motivo (se down)
-      let reason='';
-      if(dir==='down'){ reason = await askReason(); }
+      let reason=''; if(dir==='down'){ reason = await askReason(); }
 
-      // request
-      showLoading();
       let res=null;
-      try{ res = await apiVote(slug, dir, reason); }
-      catch(_){ /* falha */ }
-      hideLoading();
+      try{ res = await apiVote(slug, dir, reason); }catch(_){}
+      if(!res){ upEl.textContent = prev.up; downEl.textContent = prev.down; setActive(prev.my); }
+      else{ upEl.textContent = fmt(res.up); downEl.textContent = fmt(res.down); setActive(dir); }
 
-      if(!res){
-        // rollback
-        upEl.textContent = prev.up; downEl.textContent = prev.down; setActive(prev.my);
-      }else{
-        upEl.textContent = fmt(res.up); downEl.textContent = fmt(res.down); setActive(dir);
-      }
       setDisabled(false); busy=false;
     }
-
     upBtn.addEventListener('click', ()=>handleVote('up'));
     downBtn.addEventListener('click', ()=>handleVote('down'));
   }
 
-  // shine automático nos CTAs
+  // Shine automático (mantém seu efeito)
   (function loop(){ const ctas=document.querySelectorAll('.btn-primary,.btn-outline'); let i=0; function doOne(){ if(!ctas.length) return; const el=ctas[i%ctas.length]; el.classList.add('shine-now'); setTimeout(()=>el.classList.remove('shine-now'),1100); i++; setTimeout(doOne,8000+Math.random()*2500);} setTimeout(doOne,2000); })();
 }
 
-/* ===== BOOT ===== */
+/* ===== HOME + PRODUTO ===== */
 document.addEventListener('DOMContentLoaded', ()=>{
   renderHome();
   renderProduct();
