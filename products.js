@@ -12,8 +12,8 @@ const CHECKOUT = {
   mentoria_sem_material_trimestral: "https://seu-checkout.com/mentoria-sem-material-trimestral"
 };
 
-/* ===== ENDPOINT DO GOOGLE APPS SCRIPT (SEU WEB APP) ===== */
-const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbzYKxtH7C3ekGG3AQRn8WtakO-lpCrb30nG-hFHB0fTmg-Zm4ianENWfPzT81THW34n3w/exec";
+/* ===== URL DO SEU WEB APP (GAS) ===== */
+const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbwNxVsDc992m5EKGtfd0vYvwZbxz8wBDZ4zosBB4pkApA8uqqUT17f5F4rnR4Wx-yc4Eg/exec";
 
 /* ===== UID local (1 voto por usuário/navegador) ===== */
 function getUID(){
@@ -79,18 +79,15 @@ const PRODUCTS = {
 };
 
 /* ===== HELPERS ===== */
-function qs(name) {
-  const params = new URLSearchParams(window.location.search);
-  return params.get(name);
-}
+function qs(name) { const p = new URLSearchParams(window.location.search); return p.get(name); }
 function fmt(n){ return typeof n === "number" ? n : parseInt(n || "0", 10); }
 
-/* ===== VOTOS: integração com GAS ===== */
+/* ===== GAS ===== */
 async function fetchVotes(slug){
   try{
     const uid = getUID();
     const url = `${GAS_ENDPOINT_BASE}?action=stats&slug=${encodeURIComponent(slug)}&uid=${encodeURIComponent(uid)}`;
-    const res = await fetch(url, { method: "GET" });
+    const res = await fetch(url);
     if(!res.ok) throw new Error("HTTP "+res.status);
     return await res.json(); // { up, down, my }
   }catch(e){
@@ -102,7 +99,7 @@ async function sendVote(slug, dir, reason){
   try{
     const uid = getUID();
     const url = `${GAS_ENDPOINT_BASE}?action=vote&slug=${encodeURIComponent(slug)}&dir=${encodeURIComponent(dir)}&uid=${encodeURIComponent(uid)}&reason=${encodeURIComponent(reason||'')}`;
-    const res = await fetch(url, { method: "GET" });
+    const res = await fetch(url);
     if(!res.ok) throw new Error("HTTP "+res.status);
     return await res.json(); // { up, down, my, status }
   }catch(e){
@@ -111,7 +108,7 @@ async function sendVote(slug, dir, reason){
   }
 }
 
-/* ===== MINI MODAL “motivo” ===== */
+/* ===== MODAL ===== */
 function ensureModal(){
   if(document.getElementById('vote-modal')) return;
   const div = document.createElement('div');
@@ -227,7 +224,7 @@ function renderProduct() {
     </div>
   `;
 
-  // Votos: inicializa estado + handlers
+  // Votos
   const votesWrap = document.querySelector(".votes-wrap");
   if(votesWrap){
     const slug = votesWrap.dataset.slug;
@@ -236,62 +233,57 @@ function renderProduct() {
     const upEl = votesWrap.querySelector('[data-role="up"]');
     const downEl = votesWrap.querySelector('[data-role="down"]');
 
-    function setActive(which){ // 'up'|'down'|null
+    let isBusy = false;
+
+    function setActive(which){ // 'up' | 'down' | null
       upBtn.classList.toggle('voted', which==='up');
       downBtn.classList.toggle('voted', which==='down');
     }
-    function setDisabled(dis){
-      upBtn.disabled = !!dis; 
-      downBtn.disabled = !!dis;
-    }
+    function setDisabled(dis){ upBtn.disabled = !!dis; downBtn.disabled = !!dis; }
 
-    // Busca contagens + meu voto
+    // estado inicial
     fetchVotes(slug).then(({up,down,my})=>{
       upEl.textContent = fmt(up);
       downEl.textContent = fmt(down);
       setActive(my||null);
     });
 
-    // click handlers
-    upBtn.addEventListener('click', async ()=>{
-      setDisabled(true);
-      const res = await sendVote(slug, 'up', '');
-      setDisabled(false);
+    upBtn.addEventListener('click', async (ev)=>{
+      ev.stopPropagation();
+      if(isBusy) return;
+      isBusy = true; setDisabled(true);
+      const res = await sendVote(slug,'up','');
       if(res){
         upEl.textContent = fmt(res.up);
         downEl.textContent = fmt(res.down);
-        setActive('up');
+        setActive('up'); // garante exclusividade
       }
+      setDisabled(false); isBusy = false;
     });
 
-    downBtn.addEventListener('click', async ()=>{
-      ensureModal();
-      openModal();
+    downBtn.addEventListener('click', async (ev)=>{
+      ev.stopPropagation();
+      if(isBusy) return;
+      ensureModal(); openModal();
       const vm = document.getElementById('vote-modal');
       const ta = document.getElementById('vm-reason');
       ta.value = '';
-      return new Promise(resolve=>{
-        const onCancel = ()=>{ vm.removeEventListener('click', onClick); closeModal(); resolve(); };
-        const onSend = async ()=>{
+      const onClick = async (e)=>{
+        if(e.target.id==='vm-cancel' || e.target===vm){ vm.removeEventListener('click', onClick); closeModal(); return; }
+        if(e.target.id==='vm-send'){
+          vm.removeEventListener('click', onClick);
           const reason = ta.value.trim().slice(0,140);
-          setDisabled(true);
-          const res = await sendVote(slug, 'down', reason);
-          setDisabled(false);
-          closeModal();
+          isBusy = true; setDisabled(true);
+          const res = await sendVote(slug,'down',reason);
+          setDisabled(false); isBusy = false; closeModal();
           if(res){
             upEl.textContent = fmt(res.up);
             downEl.textContent = fmt(res.down);
-            setActive('down');
+            setActive('down'); // garante exclusividade
           }
-          resolve();
-        };
-        function onClick(e){
-          if(e.target.id==='vm-cancel') onCancel();
-          if(e.target.id==='vm-send') onSend();
-          if(e.target===vm) onCancel(); // clique fora fecha
         }
-        vm.addEventListener('click', onClick, { once:false });
-      });
+      };
+      vm.addEventListener('click', onClick);
     });
   }
 
