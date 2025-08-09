@@ -1,193 +1,118 @@
-<!doctype html>
-<html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <title>PG Concursos - Dominando o Edital</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Você está mais próximo da sua aprovação. Produtos e mentoria para concursos públicos.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PG Concursos — Dominando o Edital</title>
+  <meta name="description" content="PG Concursos - Dominando o Edital. Materiais e mentoria para acelerar sua aprovação.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { theme: { extend: {
-      colors: { brand: { 900:'#0b1b3a', 800:'#102653', 700:'#18356f', 600:'#204489' } }
-    }}}
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root{
+      --blue-900:#0b1840; --blue-800:#11255f; --blue-700:#18356f; --blue-600:#204489;
+      --white:#fff; --muted:#bcd0ff; --glass:rgba(255,255,255,.06);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,#07112c 0%,#0e1f4b 55%,#142a66 100%);color:var(--white)}
+    a{color:inherit;text-decoration:none}
+    .site-header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,rgba(6,12,32,.85),rgba(6,12,32,.55));backdrop-filter:blur(6px);border-bottom:1px solid rgba(173,197,255,.12)}
+    .header-wrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:10px}
+    .brand{font-weight:800;letter-spacing:.3px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    .brand .x{opacity:.8;font-weight:600}
+    .brand .a,.brand .b{padding:6px 10px;border-radius:10px;background:linear-gradient(135deg,rgba(32,68,137,.9),rgba(20,42,102,.9));box-shadow:0 6px 24px rgba(0,0,0,.35), inset 0 0 1px rgba(255,255,255,.25)}
+    .container{max-width:1100px;margin:0 auto;padding:24px 16px 56px}
+    .hero{margin-top:22px;border:1px solid rgba(173,197,255,.18);border-radius:18px;padding:28px;position:relative;overflow:hidden;background:
+      radial-gradient(1200px 1200px at -20% -20%, rgba(80,120,255,.25), transparent 60%),
+      radial-gradient(900px 900px at 120% -20%, rgba(64,160,255,.18), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      box-shadow:0 30px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.06)}
+    .hero h1{font-size:clamp(22px,4.5vw,36px);line-height:1.15;margin:0 0 8px;font-weight:800;letter-spacing:.2px}
+    .hero .pulse{display:inline-block;position:relative}
+    .hero .pulse::after{content:"";position:absolute;inset:-2px;border-radius:8px;box-shadow:0 0 0 0 rgba(127,178,255,.55);animation:slowPulse 2.6s ease-in-out infinite}
+    @keyframes slowPulse{0%{box-shadow:0 0 0 0 rgba(127,178,255,.55)}50%{box-shadow:0 0 0 14px rgba(127,178,255,0)}100%{box-shadow:0 0 0 0 rgba(127,178,255,0)}}
+    .hero p{margin:0;color:var(--muted)}
+    .filter-wrap{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+    .filter{position:relative;padding:10px 14px;border-radius:12px;background:var(--glass);border:1px solid rgba(173,197,255,.18);cursor:pointer;user-select:none}
+    .filter .energy{position:absolute;inset:-2px;border-radius:14px;pointer-events:none}
+    .filter .energy::before{content:"";position:absolute;inset:0;border-radius:inherit;border:2px solid transparent;background:
+      conic-gradient(from 0deg,rgba(127,178,255,.7), rgba(64,160,255,.3), rgba(127,178,255,.7)) border-box;
+      -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+      animation:spin 7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .grid-products{display:grid;gap:14px;margin-top:22px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+    .home-card{display:block;border:1px solid rgba(173,197,255,.18);border-radius:16px;padding:16px;background:
+      linear-gradient(170deg,rgba(255,255,255,.05),rgba(255,255,255,.03));box-shadow:0 12px 35px rgba(0,0,0,.35)}
+    .home-card-title{font-weight:800;margin-bottom:6px}
+    .home-card-sub{color:var(--muted);font-size:.95rem}
+    .site-footer{padding:18px 16px;border-top:1px solid rgba(173,197,255,.12);background:rgba(6,12,32,.4);backdrop-filter:blur(6px)}
+    .footer-social{display:flex;gap:14px;justify-content:center}
+    .footer-social a{display:inline-flex;width:28px;height:28px;opacity:.6;transition:.2s}
+    .footer-social a:hover{opacity:1;transform:translateY(-1px)}
+    @media (max-width:560px){ .brand .a,.brand .b{padding:5px 8px} }
+  </style>
 </head>
-<body class="bg-brand-900 text-white font-[Plus Jakarta Sans] page-gradient">
-  <!-- Header fixo -->
-  <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-brand-900/70 bg-brand-900/90 border-b border-white/10 glow-top">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-      <a href="index.html" class="brand-wrap premium-logo">
-        <span class="brand-a">PG Concursos</span>
-        <span class="brand-x">×</span>
-        <span class="brand-b">Dominando o Edital</span>
-      </a>
-      <button id="menuBtn" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 ring-1 ring-white/10 hover:bg-white/10 transition" aria-expanded="false" aria-controls="mobileNav">
-        <span class="sr-only">Abrir menu</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"/></svg>
-      </button>
-      <nav class="hidden md:flex gap-6">
-        <a href="#menu" class="nav-link">Menu</a>
-      </nav>
-    </div>
-    <div id="mobileNav" class="md:hidden hidden px-4 pb-3">
-      <div class="rounded-xl bg-white/5 ring-1 ring-white/10 p-2 space-y-1">
-        <a href="#menu" class="block px-3 py-2 rounded-lg hover:bg-white/10">Menu</a>
+<body>
+  <header class="site-header">
+    <div class="header-wrap">
+      <div class="brand">
+        <span class="a">PG Concursos</span>
+        <span class="x">×</span>
+        <span class="b">Dominando o Edital</span>
       </div>
+      <nav class="nav"></nav>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="relative overflow-hidden">
-    <div class="premium-glow" aria-hidden="true"></div>
-    <div class="max-w-6xl mx-auto px-4 py-14 md:py-20 text-center">
-      <h1 class="hero-title hero-gradient animate-shimmer">
-        Você está mais próximo da sua aprovação.
-      </h1>
-      <p class="mt-3 text-blue-50/90 text-[1.05rem]">Escolha um caminho abaixo e avance agora.</p>
-    </div>
-  </section>
+  <main class="container">
+    <section class="hero">
+      <h1><span class="pulse">Você está mais próximo da sua aprovação.</span></h1>
+      <p>Escolha seu caminho e acelere seus resultados.</p>
 
-  <!-- MENU (Accordion) -->
-  <section id="menu" class="max-w-6xl mx-auto px-4 pb-24 space-y-6">
-    <!-- Materiais -->
-    <div class="acc-item glass-section section-gradient">
-      <button class="acc-trigger energy-border" data-target="acc-materiais">
-        <svg class="energy-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="orbit-a" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#6EA8FF"/>
-              <stop offset="50%" stop-color="#AFC6FF"/>
-              <stop offset="100%" stop-color="#6EA8FF"/>
-            </linearGradient>
-          </defs>
-          <rect class="energy-stroke" x="1.5" y="1.5" width="97" height="97" rx="14" ry="14" fill="none" stroke="url(#orbit-a)" stroke-width="1.5"/>
-        </svg>
-
-        <div class="flex items-center gap-3 relative z-[1]">
-          <div class="acc-icon"><span></span></div>
-          <div>
-            <div class="acc-title">Materiais</div>
-            <div class="acc-sub">PDFs práticos para acelerar seus estudos</div>
-          </div>
+      <div class="filter-wrap" aria-label="Categorias">
+        <div class="filter" data-filter="materiais">
+          <span class="energy"></span>
+          Materiais (PDF)
         </div>
-        <svg class="acc-chevron relative z-[1]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5 7l5 5 5-5"/></svg>
-      </button>
-
-      <div id="acc-materiais" class="acc-panel">
-        <div class="grid sm:grid-cols-2 gap-4">
-          <a href="product.html?p=manual-do-aprovado" class="card-btn neon-outline card-gradient card-shine">
-            <div class="p-5">
-              <h3 class="btn-title">Manual do Aprovado</h3>
-              <p class="card-quote">O passo a passo definitivo para aprender a estudar do jeito certo e passar mais rápido.</p>
-            </div>
-          </a>
-          <a href="product.html?p=legislacao-interna-tjsp-2025" class="card-btn neon-outline card-gradient card-shine">
-            <div class="p-5">
-              <h3 class="btn-title">Legislação Interna TJ-SP 2025</h3>
-              <p class="card-quote">Simplifique o estudo da legislação com um conteúdo direto, tabelado e com questões inéditas</p>
-            </div>
-          </a>
+        <div class="filter" data-filter="mentorias">
+          <span class="energy"></span>
+          Mentorias
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Mentoria -->
-    <div class="acc-item glass-section section-gradient">
-      <button class="acc-trigger energy-border" data-target="acc-mentoria">
-        <svg class="energy-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="orbit-b" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#6EA8FF"/>
-              <stop offset="50%" stop-color="#AFC6FF"/>
-              <stop offset="100%" stop-color="#6EA8FF"/>
-            </linearGradient>
-          </defs>
-          <rect class="energy-stroke" x="1.5" y="1.5" width="97" height="97" rx="14" ry="14" fill="none" stroke="url(#orbit-b)" stroke-width="1.5"/>
-        </svg>
+    <section>
+      <div id="home-products" class="grid-products"></div>
+    </section>
+  </main>
 
-        <div class="flex items-center gap-3 relative z-[1]">
-          <div class="acc-icon"><span></span></div>
-          <div>
-            <div class="acc-title">Mentoria</div>
-            <div class="acc-sub">Planejamento personalizado e acompanhamento direto</div>
-          </div>
-        </div>
-        <svg class="acc-chevron relative z-[1]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5 7l5 5 5-5"/></svg>
-      </button>
-
-      <div id="acc-mentoria" class="acc-panel">
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <a href="product.html?p=mentoria" class="card-btn neon-outline card-gradient card-shine">
-            <div class="p-5">
-              <h3 class="btn-title">Mentoria</h3>
-              <p class="card-quote">Mentoria personalizada para planejar e acelerar sua aprovação.</p>
-            </div>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Rodapé: Instagram ultra-sutil -->
-  <footer class="border-t border-white/10">
-    <div class="max-w-6xl mx-auto px-4 py-8 flex items-center justify-between">
-      <div class="text-blue-50/75 text-[.95rem]">© PG Concursos — Dominando o Edital</div>
-      <div class="social-min">
-        <a class="social-min__a" href="https://instagram.com/pg.concursos" target="_blank" rel="noopener" title="PG Concursos no Instagram">
-          <span class="sr-only">PG Concursos</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2C4.243 2 2 4.243 2 7v10c0 2.757 2.243 5 5 5h10c2.757 0 5-2.243 5-5V7c0-2.757-2.243-5-5-5H7zm0 2h10c1.654 0 3 1.346 3 3v10c0 1.654-1.346 3-3 3H7c-1.654 0-3-1.346-3-3V7c0-1.654 1.346-3 3-3zm11 1a1 1 0 100 2 1 1 0 000-2zM12 7a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6z"/></svg>
-        </a>
-        <a class="social-min__a" href="https://instagram.com/dominandooedital" target="_blank" rel="noopener" title="Dominando o Edital no Instagram">
-          <span class="sr-only">Dominando o Edital</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2C4.243 2 2 4.243 2 7v10c0 2.757 2.243 5 5 5h10c2.757 0 5-2.243 5-5V7c0-2.757-2.243-5-5-5H7zm0 2h10c1.654 0 3 1.346 3 3v10c0 1.654-1.346 3-3 3H7c-1.654 0-3-1.346-3-3V7c0-1.654 1.346-3 3-3zm11 1a1 1 0 100 2 1 1 0 000-2zM12 7a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6z"/></svg>
-        </a>
-      </div>
+  <footer class="site-footer">
+    <div class="footer-social">
+      <a href="https://instagram.com/pg.concursos" target="_blank" rel="noopener" aria-label="PG Concursos Instagram">
+        <img src="insta-icon.svg" alt="">
+      </a>
+      <a href="https://instagram.com/dominandooedital" target="_blank" rel="noopener" aria-label="Dominando o Edital Instagram">
+        <img src="insta-icon.svg" alt="">
+      </a>
     </div>
   </footer>
 
+  <script src="products.js"></script>
   <script>
-    const menuBtn = document.getElementById('menuBtn');
-    const mobileNav = document.getElementById('mobileNav');
-    if(menuBtn){
-      menuBtn.addEventListener('click', ()=>{
-        const open = mobileNav.classList.toggle('hidden') ? false : true;
-        menuBtn.setAttribute('aria-expanded', open);
-      });
-    }
-
-    // Accordions
-    document.querySelectorAll('.acc-trigger').forEach(btn=>{
+    // filtro visual (apenas highlight; a lista vem completa do JS)
+    document.querySelectorAll('.filter').forEach(btn=>{
       btn.addEventListener('click', ()=>{
-        const id = btn.dataset.target;
-        const panel = document.getElementById(id);
-        const isOpen = panel.classList.contains('open');
-        document.querySelectorAll('.acc-panel').forEach(p=>{ p.classList.remove('open'); });
-        document.querySelectorAll('.acc-trigger').forEach(b=>{ b.classList.remove('open'); });
-
-        if(!isOpen){ panel.classList.add('open'); btn.classList.add('open'); }
+        document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const type = btn.dataset.filter;
+        document.querySelectorAll('.home-card').forEach(card=>{
+          const t = card.getAttribute('data-type');
+          card.style.display = (type==='materiais' && t==='produto') || (type==='mentorias' && t==='mentoria') ? '' : '';
+          // Mantemos todos visíveis (UX simples); se quiser, escondo os outros.
+        });
       });
     });
-
-    // Shine automático nos CTAs
-    function autoShineLoop(scope=document){
-      const ctas = scope.querySelectorAll('.btn-primary, .btn-outline');
-      let idx = 0;
-      function shineNext(){
-        if(!ctas.length) return;
-        const el = ctas[idx % ctas.length];
-        el.classList.add('shine-now');
-        setTimeout(()=> el.classList.remove('shine-now'), 1100);
-        idx++;
-        const wait = 8000 + Math.floor(Math.random()*2500);
-        setTimeout(shineNext, wait);
-      }
-      setTimeout(shineNext, 1800);
-    }
-    autoShineLoop(document);
   </script>
 </body>
 </html>
