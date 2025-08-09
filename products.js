@@ -83,7 +83,8 @@ function renderProduct() {
     if (wa) wa.style.display = "none";
     return;
   }
-  if (wa) wa.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
+
+  if (wa) wa.href = WA_LINK;
 
   const p = PRODUCTS[slug];
 
@@ -105,8 +106,8 @@ function renderProduct() {
   if (p.slug === "mentoria") {
     ctasRow = `
       <div class="flex flex-col md:flex-row flex-wrap gap-3">
-        <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}" target="_blank" rel="noopener">Contratar agora</a>
-        <a class="btn-outline auto-shine w-full md:w-auto" href="https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
+        <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Contratar agora</a>
+        <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
       </div>
     `;
   } else {
@@ -117,7 +118,7 @@ function renderProduct() {
       <div class="flex flex-col md:flex-row flex-wrap gap-3">
         <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
         ${sampleBtn}
-        <a class="btn-outline auto-shine w-full md:w-auto" href="https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
+        <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
       </div>
     `;
   }
