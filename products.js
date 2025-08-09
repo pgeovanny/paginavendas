@@ -12,127 +12,13 @@ const CHECKOUT = {
   mentoria_sem_material_trimestral: "https://seu-checkout.com/mentoria-sem-material-trimestral"
 };
 
-/* ===== IMAGENS INTERNAS (SVG em data URI, alta qualidade) ===== */
-function svgURI(svg) { return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`; }
-
-const IMG_MANUAL = svgURI(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 840">
-  <defs>
-    <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0b1b3a"/>
-      <stop offset="1" stop-color="#1d3874"/>
-    </linearGradient>
-    <radialGradient id="glow1" cx="70%" cy="20%" r="60%">
-      <stop offset="0" stop-color="#93b6ff" stop-opacity=".35"/>
-      <stop offset="1" stop-color="#93b6ff" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="accent1" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#a3c1ff"/>
-      <stop offset="1" stop-color="#eaf0ff"/>
-    </linearGradient>
-  </defs>
-  <rect width="1400" height="840" fill="url(#bg1)"/>
-  <ellipse cx="980" cy="160" rx="520" ry="260" fill="url(#glow1)"/>
-  <g opacity=".5" stroke="#5d86ff" stroke-width="2">
-    <path d="M220 640h860m-820 40h780m-740 40h700" opacity=".5"/>
-  </g>
-  <g transform="translate(200,200)">
-    <rect x="0" y="0" width="540" height="360" rx="22" fill="rgba(255,255,255,.06)" stroke="rgba(173,197,255,.25)"/>
-    <g transform="translate(34,36)" fill="#eaf0ff">
-      <rect x="0" y="0" width="420" height="20" rx="6" opacity=".9"/>
-      <rect x="0" y="44" width="380" height="18" rx="6" opacity=".8"/>
-      <rect x="0" y="86" width="420" height="18" rx="6" opacity=".75"/>
-      <rect x="0" y="128" width="360" height="18" rx="6" opacity=".7"/>
-    </g>
-    <rect x="34" y="190" width="470" height="120" rx="14" fill="rgba(255,255,255,.06)" stroke="rgba(173,197,255,.25)"/>
-  </g>
-  <text x="760" y="380" font-family="Plus Jakarta Sans,Segoe UI,Roboto" font-weight="800" font-size="70" fill="url(#accent1)">Manual do Aprovado</text>
-  <text x="760" y="440" font-family="Plus Jakarta Sans,Segoe UI,Roboto" font-size="30" fill="#dfe8ff">O passo a passo definitivo</text>
-  <text x="760" y="476" font-family="Plus Jakarta Sans,Segoe UI,Roboto" font-size="30" fill="#dfe8ff">para estudar do jeito certo e passar mais rápido</text>
-  <rect x="760" y="520" width="340" height="56" rx="14" fill="#204489"/>
-  <text x="930" y="558" text-anchor="middle" font-family="Plus Jakarta Sans,Segoe UI,Roboto" font-weight="800" font-size="28" fill="#ffffff">PDF Premium</text>
-</svg>
-`);
-
-const IMG_LEGIS = svgURI(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 840">
-  <defs>
-    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0b1b3a"/>
-      <stop offset="1" stop-color="#18356f"/>
-    </linearGradient>
-    <radialGradient id="glow2" cx="30%" cy="15%" r="70%">
-      <stop offset="0" stop-color="#9ab5ff" stop-opacity=".3"/>
-      <stop offset="1" stop-color="#9ab5ff" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="accent2" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#a3c1ff"/>
-      <stop offset="1" stop-color="#eaf0ff"/>
-    </linearGradient>
-  </defs>
-  <rect width="1400" height="840" fill="url(#bg2)"/>
-  <circle cx="380" cy="160" r="260" fill="url(#glow2)"/>
-  <!-- tabela/quadros -->
-  <g transform="translate(180,240)" fill="none" stroke="rgba(173,197,255,.35)">
-    <rect x="0" y="0" width="500" height="300" rx="18" fill="rgba(255,255,255,.05)"/>
-    <path d="M0 70h500M0 140h500M0 210h500"/>
-    <path d="M125 0v300M250 0v300M375 0v300"/>
-  </g>
-  <text x="720" y="370" font-family="Plus Jakarta Sans,Segoe UI,Roboto" font-weight="800" font-size="64" fill="url(#accent2)">Legislação Interna TJ-SP 2025</text>
-  <text x="720" y="428" font-family="Plus Jakarta Sans,Segoe UI,Roboto" font-size="30" fill="#dfe8ff">Conteúdo direto, tabelado e com questões inéditas</text>
-  <rect x="720" y="500" width="360" height="56" rx="14" fill="#204489"/>
-  <text x="900" y="538" text-anchor="middle" font-family="Plus Jakarta Sans,Segoe UI,Roboto" font-weight="800" font-size="28" fill="#ffffff">Material Organizado</text>
-</svg>
-`);
-
-const IMG_MENTORIA = svgURI(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 840">
-  <defs>
-    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0b1b3a"/>
-      <stop offset="1" stop-color="#1a2f63"/>
-    </linearGradient>
-    <radialGradient id="glow3" cx="70%" cy="30%" r="60%">
-      <stop offset="0" stop-color="#b7c9ff" stop-opacity=".3"/>
-      <stop offset="1" stop-color="#b7c9ff" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="accent3" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#a3c1ff"/>
-      <stop offset="1" stop-color="#eaf0ff"/>
-    </linearGradient>
-  </defs>
-  <rect width="1400" height="840" fill="url(#bg3)"/>
-  <ellipse cx="980" cy="220" rx="520" ry="260" fill="url(#glow3)"/>
-  <!-- gráfico/plano -->
-  <g transform="translate(200,260)" fill="none" stroke="#83a6ff">
-    <rect x="0" y="0" width="520" height="320" rx="20" fill="rgba(255,255,255,.05)" stroke="rgba(173,197,255,.35)"/>
-    <polyline points="40,250 140,220 220,240 310,180 420,200 480,140" stroke-width="4"/>
-    <circle cx="140" cy="220" r="6" fill="#83a6ff" stroke="white"/>
-    <circle cx="310" cy="180" r="6" fill="#83a6ff" stroke="white"/>
-    <circle cx="480" cy="140" r="6" fill="#83a6ff" stroke="white"/>
-  </g>
-  <text x="760" y="380" font-family="Plus Jakarta Sans,Segoe UI,Roboto" font-weight="800" font-size="72" fill="url(#accent3)">Mentoria</text>
-  <text x="760" y="438" font-family="Plus Jakarta Sans,Segoe UI,Roboto" font-size="30" fill="#dfe8ff">Plano personalizado e acompanhamento direto</text>
-  <rect x="760" y="500" width="320" height="56" rx="14" fill="#204489"/>
-  <text x="920" y="538" text-anchor="middle" font-family="Plus Jakarta Sans,Segoe UI,Roboto" font-weight="800" font-size="28" fill="#ffffff">Acompanhamento 1:1</text>
-</svg>
-`);
-
-const IMAGES = {
-  manual: IMG_MANUAL,
-  legislacao: IMG_LEGIS,
-  mentoria: IMG_MENTORIA
-};
-
-/* ===== DADOS ESTÁTICOS DOS PRODUTOS ===== */
+/* ===== DADOS ESTÁTICOS DOS PRODUTOS (SEM IMAGENS) ===== */
 const PRODUCTS = {
   "manual-do-aprovado": {
     slug: "manual-do-aprovado",
     title: "Manual do Aprovado",
     subtitle: "O passo a passo definitivo para aprender a estudar do jeito certo e passar mais rápido.",
     price: "R$ 97,00",
-    // imagem interna:
-    img: IMAGES.manual,
     sample: "https://drive.google.com/SEU-LINK-AMOSTRA-MANUAL",
     copy: [
       "Você já gastou horas, dias e até anos estudando para concursos, mas sente que não sai do lugar? Que parece estar sempre perdido, sem saber se o que está fazendo realmente funciona? A verdade é que a maioria dos concurseiros começa errado, pulando de método em método, estudando sem organização e perdendo tempo com coisas que não trazem resultado.",
@@ -150,7 +36,6 @@ const PRODUCTS = {
     title: "Legislação Interna TJ-SP 2025",
     subtitle: "Simplifique o estudo da legislação com um conteúdo direto, tabelado e com questões inéditas",
     price: "R$ 79,00",
-    img: IMAGES.legislacao,
     sample: "https://drive.google.com/SEU-LINK-AMOSTRA-LEGISLACAO",
     copy: [
       "Se preparar para o concurso do Tribunal de Justiça de São Paulo exige muito mais do que decorar a lei seca: é preciso conhecer profundamente a legislação interna, os prazos, as competências, e os detalhes que caem com frequência nas provas.",
@@ -166,7 +51,6 @@ const PRODUCTS = {
     title: "Mentoria",
     subtitle: "Mentoria personalizada para planejar e acelerar sua aprovação.",
     price: null,
-    img: IMAGES.mentoria,
     sample: null,
     copy: [
       "Conseguir a aprovação em concursos públicos é um desafio que exige muito mais do que vontade: é preciso planejamento estratégico, organização, disciplina e acompanhamento correto — e é exatamente isso que nossa Mentoria oferece.",
@@ -204,18 +88,14 @@ function renderProduct() {
 
   const p = PRODUCTS[slug];
 
+  // Cabeçalho SEM imagem
   const head = `
-    <div class="grid md:grid-cols-2 gap-6 md:gap-10 items-start">
-      <div class="glass-card neon-outline rounded-2xl overflow-hidden card-gradient card-tilt">
-        <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover" loading="lazy">
-      </div>
-      <div class="glass-panel panel-gradient">
-        <h1 class="product-title">${p.title}</h1>
-        <p class="product-subtitle">${p.subtitle}</p>
-        <div class="status-badge mt-3 inline-flex items-center gap-2 rounded-xl px-3 py-2 soft-shadow">
-          <span class="status-dot status-dot--green" aria-hidden="true"></span>
-          <span class="text-sm md:text-[.95rem] text-blue-50/92">Compra garantida • Entrega imediata</span>
-        </div>
+    <div class="glass-panel panel-gradient">
+      <h1 class="product-title">${p.title}</h1>
+      <p class="product-subtitle">${p.subtitle}</p>
+      <div class="status-badge mt-3 inline-flex items-center gap-2 rounded-xl px-3 py-2 soft-shadow">
+        <span class="status-dot status-dot--green" aria-hidden="true"></span>
+        <span class="text-sm md:text-[.95rem] text-blue-50/92">Compra garantida • Entrega imediata</span>
       </div>
     </div>
   `;
@@ -258,22 +138,7 @@ function renderProduct() {
     </div>
   `;
 
-  const tilt = document.querySelector('.card-tilt');
-  if (tilt) {
-    tilt.addEventListener('mousemove', (e) => {
-      const r = tilt.getBoundingClientRect();
-      const x = e.clientX - r.left;
-      const y = e.clientY - r.top;
-      const rx = ((y / r.height) - 0.5) * -6;
-      const ry = ((x / r.width) - 0.5) * 6;
-      tilt.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
-    });
-    tilt.addEventListener('mouseleave', () => {
-      tilt.style.transform = 'rotateX(0) rotateY(0)';
-    });
-  }
-
-  // shine nos CTAs
+  // Shine nos CTAs
   (function autoShineLoop(){
     const ctas = document.querySelectorAll('.btn-primary, .btn-outline');
     let idx = 0;
