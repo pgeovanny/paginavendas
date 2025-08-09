@@ -1,148 +1,94 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title id="product-title">Produto</title>
-  <link rel="stylesheet" href="styles.css">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  
-  <style>
-    .vote-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .vote-button {
-      padding: 8px 14px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-    .vote-button.like {
-      background-color: #1e90ff;
-      color: white;
-    }
-    .vote-button.dislike {
-      background-color: #ff4757;
-      color: white;
-    }
-    .vote-button:hover {
-      opacity: 0.85;
-    }
-    .loading {
-      font-size: 14px;
-      color: #aaa;
-      margin-left: 10px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PG Concursos — Dominando o Edital</title>
+  <meta name="description" content="PG Concursos - Dominando o Edital. Materiais e mentoria para acelerar sua aprovação.">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-
-  <header>
-    <nav class="navbar">
-      <a href="index.html" class="logo">PG Concursos</a>
-      <a href="index.html" class="nav-link">Dominar o Edital</a>
-    </nav>
+  <!-- Header fixo -->
+  <header class="site-header">
+    <div class="header-wrap">
+      <div class="brand">
+        <span class="brand-pill">PG Concursos</span>
+        <span class="brand-x">×</span>
+        <span class="brand-pill">Dominando o Edital</span>
+      </div>
+    </div>
   </header>
 
   <main class="container">
-    <section class="product-detail">
-      <h1 id="product-name"></h1>
-      <p id="product-description"></p>
+    <!-- Hero -->
+    <section class="hero glass">
+      <h1 class="hero-title">
+        <span class="pulse">Você está mais próximo da sua aprovação.</span>
+      </h1>
+      <p class="hero-sub">Escolha seu caminho e acelere seus resultados.</p>
 
-      <div class="price" id="product-price"></div>
-
-      <div class="product-actions">
-        <a id="buy-link" href="#" target="_blank" class="btn primary">Comprar Agora</a>
-        <a id="sample-link" href="#" target="_blank" class="btn secondary">Ver amostra</a>
-        <a id="contact-link" href="#" target="_blank" class="btn outline">Ainda tem dúvidas? Clique aqui</a>
-      </div>
-
-      <div class="vote-section">
-        <div class="vote-buttons">
-          <button class="vote-button like" id="like-btn">👍 Gostei <span id="like-count">0</span></button>
-          <button class="vote-button dislike" id="dislike-btn">👎 Não curti <span id="dislike-count">0</span></button>
-          <span class="loading" id="vote-loading" style="display:none;">Enviando voto...</span>
-        </div>
+      <!-- Filtros com energia correndo ao redor de cada botão -->
+      <div class="filters">
+        <button class="filter-chip" data-type="produto" aria-pressed="false" type="button">
+          <span class="chip-energy"></span>
+          <span>Materiais (PDF)</span>
+        </button>
+        <button class="filter-chip" data-type="mentoria" aria-pressed="false" type="button">
+          <span class="chip-energy"></span>
+          <span>Mentorias</span>
+        </button>
       </div>
     </section>
+
+    <!-- Cards dos produtos (renderizados pelo products.js) -->
+    <section class="products-grid" id="home-products"></section>
   </main>
 
+  <footer class="site-footer">
+    <div class="footer-social">
+      <a href="https://instagram.com/pg.concursos" target="_blank" rel="noopener" aria-label="PG Concursos Instagram">
+        <span class="ig-dot"></span>
+      </a>
+      <a href="https://instagram.com/dominandooedital" target="_blank" rel="noopener" aria-label="Dominando o Edital Instagram">
+        <span class="ig-dot"></span>
+      </a>
+    </div>
+  </footer>
+
+  <!-- Loader global (usado pelo products.js) -->
+  <div id="pg-loading" class="pg-loading"><div class="pg-spinner"></div></div>
+
+  <!-- Lógica de produtos (catálogo híbrido: 3 padrões + planilha) -->
+  <script src="products.js"></script>
+
+  <!-- Filtro (comportamento visual; mantém o layout validado) -->
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const slug = params.get("slug");
+    document.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.filter-chip');
+      if(!btn) return;
 
-    const sheetId = "1bvo5HGapsDTOtKkgOba5_pRAZZXxDTwyJ5Yxsc26604";
-    const logSheet = "votos_log";
-
-    const likeBtn = document.getElementById("like-btn");
-    const dislikeBtn = document.getElementById("dislike-btn");
-    const likeCount = document.getElementById("like-count");
-    const dislikeCount = document.getElementById("dislike-count");
-    const voteLoading = document.getElementById("vote-loading");
-
-    async function fetchProductData() {
-      const res = await fetch(`https://opensheet.elk.sh/${sheetId}/produtos`);
-      const data = await res.json();
-      const product = data.find(p => p.slug === slug);
-
-      if (product) {
-        document.getElementById("product-title").innerText = product.nome;
-        document.getElementById("product-name").innerText = product.nome;
-        document.getElementById("product-description").innerText = product.descricao;
-        document.getElementById("product-price").innerText = `Preço: R$ ${product.preco}`;
-        document.getElementById("buy-link").href = product.link_compra;
-        document.getElementById("sample-link").href = product.link_amostra;
-        document.getElementById("contact-link").href = product.link_contato;
-      }
-    }
-
-    async function fetchVotes() {
-      const res = await fetch(`https://opensheet.elk.sh/${sheetId}/${logSheet}`);
-      const data = await res.json();
-      const votes = data.filter(v => v.slug === slug);
-
-      const likes = votes.filter(v => v.dir === "up").length;
-      const dislikes = votes.filter(v => v.dir === "down").length;
-
-      likeCount.innerText = likes;
-      dislikeCount.innerText = dislikes;
-    }
-
-    async function sendVote(direction) {
-      voteLoading.style.display = "inline";
-      const uid = localStorage.getItem("pg_uid") || Math.random().toString(36).substring(2);
-      localStorage.setItem("pg_uid", uid);
-
-      const timestamp = new Date().toLocaleString("pt-BR");
-      const body = {
-        timestamp,
-        slug,
-        uid,
-        dir: direction,
-        reason: ""
-      };
-
-      await fetch(`https://script.google.com/macros/s/SEU_SCRIPT_ID/exec`, {
-        method: "POST",
-        body: JSON.stringify(body)
+      const active = btn.getAttribute('aria-pressed') === 'true';
+      // desliga todos e liga só o clicado (modo single)
+      document.querySelectorAll('.filter-chip').forEach(b=>{
+        b.setAttribute('aria-pressed','false');
+        b.classList.remove('chip-active');
       });
 
-      await fetchVotes();
-      voteLoading.style.display = "none";
-    }
+      // se já estava ativo, limpa o filtro (mostra tudo)
+      if(active){
+        document.querySelectorAll('.home-card').forEach(c=> c.style.display = '');
+        return;
+      }
 
-    likeBtn.addEventListener("click", () => sendVote("up"));
-    dislikeBtn.addEventListener("click", () => sendVote("down"));
+      btn.setAttribute('aria-pressed','true');
+      btn.classList.add('chip-active');
 
-    fetchProductData();
-    fetchVotes();
+      const type = btn.dataset.type;
+      document.querySelectorAll('.home-card').forEach(card=>{
+        const t = card.getAttribute('data-type') || 'produto';
+        card.style.display = (t === type) ? '' : 'none';
+      });
+    });
   </script>
-
 </body>
 </html>
