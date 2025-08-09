@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PG Concursos — Dominando o Edital</title>
   <meta name="description" content="PG Concursos - Dominando o Edital. Materiais e mentoria para acelerar sua aprovação.">
+  <!-- Seu CSS original -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -27,13 +28,13 @@
       </h1>
       <p class="hero-sub">Escolha seu caminho e acelere seus resultados.</p>
 
-      <!-- Filtros com ENERGIA correndo ao redor de CADA botão -->
+      <!-- Filtros com energia correndo ao redor de cada botão -->
       <div class="filters">
-        <button class="filter-chip" data-type="produto" aria-pressed="false">
+        <button class="filter-chip" data-type="produto" aria-pressed="false" type="button">
           <span class="chip-energy"></span>
           <span>Materiais (PDF)</span>
         </button>
-        <button class="filter-chip" data-type="mentoria" aria-pressed="false">
+        <button class="filter-chip" data-type="mentoria" aria-pressed="false" type="button">
           <span class="chip-energy"></span>
           <span>Mentorias</span>
         </button>
@@ -55,34 +56,39 @@
     </div>
   </footer>
 
+  <!-- Loader global (usado pelo products.js) -->
   <div id="pg-loading" class="pg-loading"><div class="pg-spinner"></div></div>
+
+  <!-- Lógica de produtos (catálogo híbrido: 3 padrões + planilha) -->
   <script src="products.js"></script>
+
+  <!-- Filtro (apenas comportamento visual; não altera layout) -->
   <script>
-    // Filtro visual (filtra por data-type sem mexer no layout)
     document.addEventListener('click', (e)=>{
       const btn = e.target.closest('.filter-chip');
       if(!btn) return;
-      // toggle pressed
+
       const active = btn.getAttribute('aria-pressed') === 'true';
       // desliga todos e liga só o clicado (modo single)
       document.querySelectorAll('.filter-chip').forEach(b=>{
         b.setAttribute('aria-pressed','false');
         b.classList.remove('chip-active');
       });
-      if(!active){
-        btn.setAttribute('aria-pressed','true');
-        btn.classList.add('chip-active');
+
+      // se já estava ativo, limpa filtro (mostra tudo)
+      if(active){
+        document.querySelectorAll('.home-card').forEach(c=> c.style.display = '');
+        return;
       }
+
+      btn.setAttribute('aria-pressed','true');
+      btn.classList.add('chip-active');
+
       const type = btn.dataset.type;
-      const allCards = document.querySelectorAll('.home-card');
-      if(active){ // se clicou pra desativar, mostra tudo
-        allCards.forEach(c=> c.style.display = '');
-      }else{
-        allCards.forEach(c=>{
-          const t = c.getAttribute('data-type') || 'produto';
-          c.style.display = (t === type) ? '' : 'none';
-        });
-      }
+      document.querySelectorAll('.home-card').forEach(card=>{
+        const t = card.getAttribute('data-type') || 'produto';
+        card.style.display = (t === type) ? '' : 'none';
+      });
     });
   </script>
 </body>
