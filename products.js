@@ -4,7 +4,7 @@ const WHATSAPP_MSG = encodeURIComponent("Olá! Tenho dúvidas / Quero contratar 
 const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
 
 // Web App do Apps Script
-const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbzJeIygDGZ6Ea1fe_0KC7lE1EgjweUn1-Yix_kQQx9219H7Vfzsyy1yyw_fdDkCfG4itA/exec";
+const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbwAqg3lzTSScB5odVjLuujG2zvenhtPm2zToot3jTVZ3s7gvNmxyoSRm52RrpoKYT5g8w/exec";
 
 const CHECKOUT = {
   manual: "https://seu-checkout.com/manual",
@@ -22,27 +22,24 @@ function getUID(){
   return u;
 }
 
-/* ===== MINI CSS (loader + micro animações) ===== */
+/* ===== MINI CSS: spinner nos botões ===== */
 (function injectStyle(){
   if(document.getElementById('pg-inline-style')) return;
   const css = `
-  .pg-loading{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,12,32,.45);backdrop-filter:blur(2px);z-index:9999}
-  .pg-loading.open{display:flex}
-  .pg-spinner{width:42px;height:42px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:#7fb2ff;animation:pgspin 0.9s linear infinite}
-  @keyframes pgspin{to{transform:rotate(360deg)}}
-  .vote-btn.voted{outline:2px solid rgba(127,178,255,.6); box-shadow:0 0 0 3px rgba(127,178,255,.15) inset;}
+  .vote-btn{position:relative}
+  .vote-btn .btn-spinner{display:none; width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#7fb2ff;animation:spin .7s linear infinite;margin-left:6px}
+  .vote-btn.loading .btn-spinner{display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .vote-btn.voted{outline:2px solid rgba(127,178,255,.55); box-shadow:0 0 0 3px rgba(127,178,255,.12) inset;}
   .vote-btn:disabled{opacity:.6;cursor:not-allowed}
   .shine-now{position:relative;overflow:hidden}
   .shine-now::after{content:"";position:absolute;inset:0;transform:translateX(-120%);background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.12) 50%,transparent 100%);animation:sh 1.1s ease}
   @keyframes sh{to{transform:translateX(120%)}}
   `;
   const s=document.createElement('style'); s.id='pg-inline-style'; s.textContent=css; document.head.appendChild(s);
-  const overlay=document.createElement('div'); overlay.id='pg-loading'; overlay.className='pg-loading'; overlay.innerHTML='<div class="pg-spinner"></div>'; document.body.appendChild(overlay);
 })();
-function showLoading(){ const el=document.getElementById('pg-loading'); if(el) el.classList.add('open'); }
-function hideLoading(){ const el=document.getElementById('pg-loading'); if(el) el.classList.remove('open'); }
 
-/* ===== DADOS ===== */
+/* ===== DADOS (copys mantidas) ===== */
 const PRODUCTS = {
   "manual-do-aprovado": {
     slug: "manual-do-aprovado",
@@ -99,20 +96,20 @@ const PRODUCTS = {
 function qs(n){ return new URLSearchParams(location.search).get(n); }
 function fmt(n){ return typeof n==='number'?n:parseInt(n||'0',10); }
 
-/* ===== GAS via GET (sem CORS chatice) ===== */
+/* ===== GAS via GET ===== */
 async function apiStats(slug){
   try{
     const url = `${GAS_ENDPOINT_BASE}?action=stats&slug=${encodeURIComponent(slug)}&uid=${encodeURIComponent(getUID())}`;
     const r = await fetch(url); if(!r.ok) throw new Error(r.status);
     return await r.json();
-  }catch(e){ console.warn(e); return {up:0,down:0,my:null}; }
+  }catch{ return {up:0,down:0,my:null}; }
 }
 async function apiVote(slug, dir, reason){
   try{
     const url = `${GAS_ENDPOINT_BASE}?action=vote&slug=${encodeURIComponent(slug)}&uid=${encodeURIComponent(getUID())}&dir=${encodeURIComponent(dir)}&reason=${encodeURIComponent(reason||'')}`;
     const r = await fetch(url); if(!r.ok) throw new Error(r.status);
     return await r.json();
-  }catch(e){ console.warn(e); return null; }
+  }catch{ return null; }
 }
 
 /* ===== Modal ===== */
@@ -168,15 +165,10 @@ function renderProduct(){
   const copyHtml=p.copy.map(t=>`<p>${t}</p>`).join('');
   const priceHtml=p.price?`<div class="product-price">Preço: <span>${p.price}</span></div>`:'';
 
-  // BOTÕES + BLOCOS DE VOTO (agora TAMBÉM na mentoria)
-  const sampleBtn = p.sample
-    ? `<a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
-    : "";
-
   const votesBlock=`
     <div class="votes-wrap" data-slug="${p.slug}">
-      <button class="vote-btn vote-up" type="button"><span class="vote-icon">👍</span><span class="vote-text">Gostei</span> <span class="vote-count" data-role="up">0</span></button>
-      <button class="vote-btn vote-down" type="button"><span class="vote-icon">👎</span><span class="vote-text">Não curti</span> <span class="vote-count" data-role="down">0</span></button>
+      <button class="vote-btn vote-up" type="button"><span class="vote-icon">👍</span><span class="vote-text">Gostei</span> <span class="vote-count" data-role="up">0</span><span class="btn-spinner"></span></button>
+      <button class="vote-btn vote-down" type="button"><span class="vote-icon">👎</span><span class="vote-text">Não curti</span> <span class="vote-count" data-role="down">0</span><span class="btn-spinner"></span></button>
     </div>`;
 
   let ctasRow='';
@@ -186,6 +178,7 @@ function renderProduct(){
       <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
     </div>${votesBlock}`;
   }else{
+    const sampleBtn = p.sample ? `<a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>` : '';
     ctasRow=`<div class="flex flex-col md:flex-row flex-wrap gap-3">
       <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
       ${sampleBtn}
@@ -212,41 +205,11 @@ function renderProduct(){
 
     function setActive(w){ upBtn.classList.toggle('voted', w==='up'); downBtn.classList.toggle('voted', w==='down'); }
     function setDisabled(d){ upBtn.disabled=!!d; downBtn.disabled=!!d; }
+    function spin(btn,on){ btn.classList.toggle('loading', !!on); }
 
-    // estado inicial
-    showLoading();
-    apiStats(slug).then(({up,down,my})=>{
-      upEl.textContent=fmt(up); downEl.textContent=fmt(down); setActive(my||null);
-    }).finally(hideLoading);
+    apiStats(slug).then(({up,down,my})=>{ upEl.textContent=fmt(up); downEl.textContent=fmt(down); setActive(my||null); });
 
-    // ===== UI otimista =====
-    async function handleVote(dir){
-      if(busy) return; busy=true; setDisabled(true);
-      // snapshot para rollback se falhar
-      const prev = { up: fmt(upEl.textContent), down: fmt(downEl.textContent), my: (upBtn.classList.contains('voted')?'up': (downBtn.classList.contains('voted')?'down':null)) };
-      // aplica otimista
-      if(dir==='up'){
-        if(prev.my==='down'){ downEl.textContent = Math.max(0, prev.down-1); }
-        if(prev.my!=='up'){ upEl.textContent = prev.up+1; }
-        setActive('up');
-      }else{
-        if(prev.my==='up'){ upEl.textContent = Math.max(0, prev.up-1); }
-        if(prev.my!=='down'){ downEl.textContent = prev.down+1; }
-        setActive('down');
-      }
-      showLoading();
-      const res = await apiVote(slug, dir, dir==='down' ? (await askReason()) : '');
-      hideLoading();
-      if(!res){ // rollback se falhar
-        upEl.textContent = prev.up; downEl.textContent = prev.down; setActive(prev.my); 
-      }else{
-        // ajusta com os números oficiais do servidor (se diferirem)
-        upEl.textContent = fmt(res.up); downEl.textContent = fmt(res.down); setActive(dir);
-      }
-      setDisabled(false); busy=false;
-    }
-
-    function askReason(){
+    async function askReason(){
       return new Promise(resolve=>{
         ensureModal(); openModal();
         const vm=document.getElementById('vote-modal'); const ta=document.getElementById('vm-reason'); ta.value='';
@@ -258,11 +221,38 @@ function renderProduct(){
       });
     }
 
+    async function handleVote(dir){
+      if(busy) return; busy=true; setDisabled(true);
+      const prev = { up: fmt(upEl.textContent), down: fmt(downEl.textContent), my: (upBtn.classList.contains('voted')?'up': (downBtn.classList.contains('voted')?'down':null)) };
+
+      // UI otimista
+      if(dir==='up'){
+        if(prev.my==='down'){ downEl.textContent = Math.max(0, prev.down-1); }
+        if(prev.my!=='up'){ upEl.textContent = prev.up+1; }
+        setActive('up'); spin(upBtn,true);
+      }else{
+        if(prev.my==='up'){ upEl.textContent = Math.max(0, prev.up-1); }
+        if(prev.my!=='down'){ downEl.textContent = prev.down+1; }
+        setActive('down'); spin(downBtn,true);
+      }
+
+      const reason = dir==='down' ? (await askReason()) : '';
+      const res = await apiVote(slug, dir, reason);
+
+      spin(upBtn,false); spin(downBtn,false); setDisabled(false); busy=false;
+
+      if(!res){
+        // rollback
+        upEl.textContent = prev.up; downEl.textContent = prev.down; setActive(prev.my);
+      }else{
+        upEl.textContent = fmt(res.up); downEl.textContent = fmt(res.down); setActive(dir);
+      }
+    }
+
     upBtn.addEventListener('click', ()=>handleVote('up'));
     downBtn.addEventListener('click', ()=>handleVote('down'));
   }
 
-  // shine automático
   (function loop(){ const ctas=document.querySelectorAll('.btn-primary,.btn-outline'); let i=0; function doOne(){ if(!ctas.length) return; const el=ctas[i%ctas.length]; el.classList.add('shine-now'); setTimeout(()=>el.classList.remove('shine-now'),1100); i++; setTimeout(doOne,8000+Math.random()*2500);} setTimeout(doOne,2000); })();
 }
 
