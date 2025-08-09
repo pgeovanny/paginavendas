@@ -12,6 +12,9 @@ const CHECKOUT = {
   mentoria_sem_material_trimestral: "https://seu-checkout.com/mentoria-sem-material-trimestral"
 };
 
+/* ===== ENDPOINT DO GOOGLE APPS SCRIPT (cole seu URL de deploy) ===== */
+const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/SEU_DEPLOY_ID/exec";
+
 /* ===== DADOS ESTÁTICOS (sem imagens) ===== */
 const PRODUCTS = {
   "manual-do-aprovado": {
@@ -70,6 +73,34 @@ function qs(name) {
   const params = new URLSearchParams(window.location.search);
   return params.get(name);
 }
+function fmt(n){ return typeof n === "number" ? n : parseInt(n || "0", 10); }
+
+/* ===== VOTOS: integração com Google Apps Script ===== */
+async function fetchVotes(slug){
+  try{
+    const url = `${GAS_ENDPOINT_BASE}?action=stats&slug=${encodeURIComponent(slug)}`;
+    const res = await fetch(url, { method: "GET" });
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    return await res.json(); // { up: number, down: number }
+  }catch(e){
+    console.warn("Falha ao buscar votos:", e);
+    return { up: 0, down: 0 };
+  }
+}
+async function sendVote(slug, dir){ // dir: "up" | "down"
+  try{
+    const res = await fetch(GAS_ENDPOINT_BASE, {
+      method: "POST",
+      headers: { "Content-Type":"application/json" },
+      body: JSON.stringify({ action:"vote", slug, dir })
+    });
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    return await res.json(); // { up, down }
+  }catch(e){
+    console.warn("Falha ao votar:", e);
+    return null;
+  }
+}
 
 /* ===== RENDER ===== */
 function renderProduct() {
@@ -114,12 +145,30 @@ function renderProduct() {
     const sampleBtn = p.sample
       ? `<a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
       : "";
+
+    // bloco de votos (like/dislike)
+    const votesBlock = `
+      <div class="votes-wrap" data-slug="${p.slug}">
+        <button class="vote-btn vote-up" type="button" aria-label="Gostei da amostra">
+          <span class="vote-icon">👍</span>
+          <span class="vote-text">Gostei</span>
+          <span class="vote-count" data-role="up">0</span>
+        </button>
+        <button class="vote-btn vote-down" type="button" aria-label="Não curti a amostra">
+          <span class="vote-icon">👎</span>
+          <span class="vote-text">Não curti</span>
+          <span class="vote-count" data-role="down">0</span>
+        </button>
+      </div>
+    `;
+
     ctasRow = `
       <div class="flex flex-col md:flex-row flex-wrap gap-3">
         <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
         ${sampleBtn}
         <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
       </div>
+      ${votesBlock}
     `;
   }
 
@@ -137,7 +186,36 @@ function renderProduct() {
     </div>
   `;
 
-  // Shine loop
+  // Inicializa votos (busca no backend)
+  const votesWrap = document.querySelector(".votes-wrap");
+  if(votesWrap){
+    const slug = votesWrap.dataset.slug;
+    fetchVotes(slug).then(({up, down})=>{
+      const upEl = votesWrap.querySelector('[data-role="up"]');
+      const downEl = votesWrap.querySelector('[data-role="down"]');
+      if(upEl) upEl.textContent = fmt(up);
+      if(downEl) downEl.textContent = fmt(down);
+    });
+    votesWrap.addEventListener("click", async (e)=>{
+      const btn = e.target.closest(".vote-btn");
+      if(!btn) return;
+      const dir = btn.classList.contains("vote-up") ? "up" : "down";
+      btn.classList.add("is-loading");
+      const result = await sendVote(slug, dir);
+      btn.classList.remove("is-loading");
+      if(result){
+        const upEl = votesWrap.querySelector('[data-role="up"]');
+        const downEl = votesWrap.querySelector('[data-role="down"]');
+        if(upEl) upEl.textContent = fmt(result.up);
+        if(downEl) downEl.textContent = fmt(result.down);
+        // feedback visual rápido
+        btn.classList.add("voted");
+        setTimeout(()=> btn.classList.remove("voted"), 800);
+      }
+    });
+  }
+
+  // Shine loop nos CTAs
   (function autoShineLoop(){
     const ctas = document.querySelectorAll('.btn-primary, .btn-outline');
     let idx = 0;
