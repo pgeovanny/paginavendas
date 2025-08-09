@@ -4,7 +4,7 @@ const WHATSAPP_MSG = encodeURIComponent("Olá! Tenho dúvidas / Quero contratar 
 const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
 
 // Web App do Apps Script
-const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbwBSnK9tD_8LYAdhS4a65qNTtsST1qdmVOfverHqT0r_7nvluDc4JMiNQk8p7ZT_-po4w/exec";
+const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbzJeIygDGZ6Ea1fe_0KC7lE1EgjweUn1-Yix_kQQx9219H7Vfzsyy1yyw_fdDkCfG4itA/exec";
 
 const CHECKOUT = {
   manual: "https://seu-checkout.com/manual",
@@ -21,6 +21,26 @@ function getUID(){
   if(!u){ u = Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem('pg_uid', u); }
   return u;
 }
+
+/* ===== MINI CSS (loader + micro animações) ===== */
+(function injectStyle(){
+  if(document.getElementById('pg-inline-style')) return;
+  const css = `
+  .pg-loading{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,12,32,.45);backdrop-filter:blur(2px);z-index:9999}
+  .pg-loading.open{display:flex}
+  .pg-spinner{width:42px;height:42px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:#7fb2ff;animation:pgspin 0.9s linear infinite}
+  @keyframes pgspin{to{transform:rotate(360deg)}}
+  .vote-btn.voted{outline:2px solid rgba(127,178,255,.6); box-shadow:0 0 0 3px rgba(127,178,255,.15) inset;}
+  .vote-btn:disabled{opacity:.6;cursor:not-allowed}
+  .shine-now{position:relative;overflow:hidden}
+  .shine-now::after{content:"";position:absolute;inset:0;transform:translateX(-120%);background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.12) 50%,transparent 100%);animation:sh 1.1s ease}
+  @keyframes sh{to{transform:translateX(120%)}}
+  `;
+  const s=document.createElement('style'); s.id='pg-inline-style'; s.textContent=css; document.head.appendChild(s);
+  const overlay=document.createElement('div'); overlay.id='pg-loading'; overlay.className='pg-loading'; overlay.innerHTML='<div class="pg-spinner"></div>'; document.body.appendChild(overlay);
+})();
+function showLoading(){ const el=document.getElementById('pg-loading'); if(el) el.classList.add('open'); }
+function hideLoading(){ const el=document.getElementById('pg-loading'); if(el) el.classList.remove('open'); }
 
 /* ===== DADOS ===== */
 const PRODUCTS = {
@@ -148,19 +168,24 @@ function renderProduct(){
   const copyHtml=p.copy.map(t=>`<p>${t}</p>`).join('');
   const priceHtml=p.price?`<div class="product-price">Preço: <span>${p.price}</span></div>`:'';
 
+  // BOTÕES + BLOCOS DE VOTO (agora TAMBÉM na mentoria)
+  const sampleBtn = p.sample
+    ? `<a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`
+    : "";
+
+  const votesBlock=`
+    <div class="votes-wrap" data-slug="${p.slug}">
+      <button class="vote-btn vote-up" type="button"><span class="vote-icon">👍</span><span class="vote-text">Gostei</span> <span class="vote-count" data-role="up">0</span></button>
+      <button class="vote-btn vote-down" type="button"><span class="vote-icon">👎</span><span class="vote-text">Não curti</span> <span class="vote-count" data-role="down">0</span></button>
+    </div>`;
+
   let ctasRow='';
   if(p.slug==='mentoria'){
     ctasRow=`<div class="flex flex-col md:flex-row flex-wrap gap-3">
       <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Contratar agora</a>
       <a class="btn-outline auto-shine w-full md:w-auto" href="${WA_LINK}" target="_blank" rel="noopener">Ainda tem dúvidas? Clique aqui</a>
-    </div>`;
+    </div>${votesBlock}`;
   }else{
-    const sampleBtn=p.sample?`<a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.sample}" target="_blank" rel="noopener">Ver amostra</a>`:'';
-    const votesBlock=`
-    <div class="votes-wrap" data-slug="${p.slug}">
-      <button class="vote-btn vote-up" type="button"><span class="vote-icon">👍</span><span class="vote-text">Gostei</span> <span class="vote-count" data-role="up">0</span></button>
-      <button class="vote-btn vote-down" type="button"><span class="vote-icon">👎</span><span class="vote-text">Não curti</span> <span class="vote-count" data-role="down">0</span></button>
-    </div>`;
     ctasRow=`<div class="flex flex-col md:flex-row flex-wrap gap-3">
       <a class="btn-primary glow-btn auto-shine w-full md:w-auto" href="${p.checkout}" target="_blank" rel="noopener">Comprar Agora</a>
       ${sampleBtn}
@@ -188,29 +213,53 @@ function renderProduct(){
     function setActive(w){ upBtn.classList.toggle('voted', w==='up'); downBtn.classList.toggle('voted', w==='down'); }
     function setDisabled(d){ upBtn.disabled=!!d; downBtn.disabled=!!d; }
 
-    apiStats(slug).then(({up,down,my})=>{ upEl.textContent=fmt(up); downEl.textContent=fmt(down); setActive(my||null); });
+    // estado inicial
+    showLoading();
+    apiStats(slug).then(({up,down,my})=>{
+      upEl.textContent=fmt(up); downEl.textContent=fmt(down); setActive(my||null);
+    }).finally(hideLoading);
 
-    upBtn.addEventListener('click', async e=>{
-      e.stopPropagation(); if(busy) return; busy=true; setDisabled(true);
-      const res=await apiVote(slug,'up',''); setDisabled(false); busy=false;
-      if(res){ upEl.textContent=fmt(res.up); downEl.textContent=fmt(res.down); setActive('up'); }
-    });
+    // ===== UI otimista =====
+    async function handleVote(dir){
+      if(busy) return; busy=true; setDisabled(true);
+      // snapshot para rollback se falhar
+      const prev = { up: fmt(upEl.textContent), down: fmt(downEl.textContent), my: (upBtn.classList.contains('voted')?'up': (downBtn.classList.contains('voted')?'down':null)) };
+      // aplica otimista
+      if(dir==='up'){
+        if(prev.my==='down'){ downEl.textContent = Math.max(0, prev.down-1); }
+        if(prev.my!=='up'){ upEl.textContent = prev.up+1; }
+        setActive('up');
+      }else{
+        if(prev.my==='up'){ upEl.textContent = Math.max(0, prev.up-1); }
+        if(prev.my!=='down'){ downEl.textContent = prev.down+1; }
+        setActive('down');
+      }
+      showLoading();
+      const res = await apiVote(slug, dir, dir==='down' ? (await askReason()) : '');
+      hideLoading();
+      if(!res){ // rollback se falhar
+        upEl.textContent = prev.up; downEl.textContent = prev.down; setActive(prev.my); 
+      }else{
+        // ajusta com os números oficiais do servidor (se diferirem)
+        upEl.textContent = fmt(res.up); downEl.textContent = fmt(res.down); setActive(dir);
+      }
+      setDisabled(false); busy=false;
+    }
 
-    downBtn.addEventListener('click', e=>{
-      e.stopPropagation(); if(busy) return; ensureModal(); openModal();
-      const vm=document.getElementById('vote-modal'); const ta=document.getElementById('vm-reason'); ta.value='';
-      const onClick=async ev=>{
-        if(ev.target.id==='vm-cancel' || ev.target===vm){ vm.removeEventListener('click',onClick); closeModal(); return; }
-        if(ev.target.id==='vm-send'){
-          vm.removeEventListener('click',onClick);
-          busy=true; setDisabled(true);
-          const res=await apiVote(slug,'down', ta.value.trim().slice(0,140));
-          setDisabled(false); busy=false; closeModal();
-          if(res){ upEl.textContent=fmt(res.up); downEl.textContent=fmt(res.down); setActive('down'); }
-        }
-      };
-      vm.addEventListener('click', onClick);
-    });
+    function askReason(){
+      return new Promise(resolve=>{
+        ensureModal(); openModal();
+        const vm=document.getElementById('vote-modal'); const ta=document.getElementById('vm-reason'); ta.value='';
+        const onClick=(ev)=>{
+          if(ev.target.id==='vm-cancel' || ev.target===vm){ vm.removeEventListener('click',onClick); closeModal(); resolve(''); }
+          if(ev.target.id==='vm-send'){ vm.removeEventListener('click',onClick); const r=ta.value.trim().slice(0,140); closeModal(); resolve(r); }
+        };
+        vm.addEventListener('click', onClick);
+      });
+    }
+
+    upBtn.addEventListener('click', ()=>handleVote('up'));
+    downBtn.addEventListener('click', ()=>handleVote('down'));
   }
 
   // shine automático
