@@ -1,10 +1,10 @@
 /* ===== CONFIG ===== */
-const WHATSAPP_NUMBER = "5599999999999";
+const WHATSAPP_NUMBER = "5599999999999"; // <- ajuste
 const WHATSAPP_MSG = encodeURIComponent("Olá! Tenho dúvidas / Quero contratar agora.");
 const WA_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
 
-// Web App do Apps Script
-const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbyPf6Cwfh0Q6RGE11u8Pz0uj5jXPDjfDCC7nImy139Smz0OaywfhSFcnlNvwFiqIEzXZA/exec";
+// Web App do Apps Script (seu /exec atual)
+const GAS_ENDPOINT_BASE = "https://script.google.com/macros/s/AKfycbwNxVsDc992m5EKGtfd0vYvwZbxz8wBDZ4zosBB4pkApA8uqqUT17f5F4rnR4Wx-yc4Eg/exec";
 
 /* ===== UID ===== */
 function getUID(){
@@ -13,50 +13,120 @@ function getUID(){
   return u;
 }
 
-/* ===== MINI CSS (loader + micro animações) ===== */
-(function injectStyle(){
-  if(document.getElementById('pg-inline-style')) return;
-  const css = `
-  .pg-loading{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,12,32,.45);backdrop-filter:blur(2px);z-index:9999}
-  .pg-loading.open{display:flex}
-  .pg-spinner{width:42px;height:42px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:#7fb2ff;animation:pgspin 0.9s linear infinite}
-  @keyframes pgspin{to{transform:rotate(360deg)}}
-  .vote-btn.voted{outline:2px solid rgba(127,178,255,.6); box-shadow:0 0 0 3px rgba(127,178,255,.15) inset;}
-  .vote-btn:disabled{opacity:.6;cursor:not-allowed}
-  .shine-now{position:relative;overflow:hidden}
-  .shine-now::after{content:"";position:absolute;inset:0;transform:translateX(-120%);background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.12) 50%,transparent 100%);animation:sh 1.1s ease}
-  @keyframes sh{to{transform:translateX(120%)}}
-  `;
-  const s=document.createElement('style'); s.id='pg-inline-style'; s.textContent=css; document.head.appendChild(s);
-  const overlay=document.createElement('div'); overlay.id='pg-loading'; overlay.className='pg-loading'; overlay.innerHTML='<div class="pg-spinner"></div>'; document.body.appendChild(overlay);
-})();
-function showLoading(){ const el=document.getElementById('pg-loading'); if(el) el.classList.add('open'); }
-function hideLoading(){ const el=document.getElementById('pg-loading'); if(el) el.classList.remove('open'); }
-
 /* ===== HELPERS ===== */
 function qs(n){ return new URLSearchParams(location.search).get(n); }
 function fmt(n){ return typeof n==='number'?n:parseInt(n||'0',10); }
+function showLoading(){ const el=document.getElementById('pg-loading'); if(el) el.classList.add('open'); }
+function hideLoading(){ const el=document.getElementById('pg-loading'); if(el) el.classList.remove('open'); }
 
-/* ===== GAS (Catálogo/Votos) ===== */
-async function apiProducts(){
-  const url = `${GAS_ENDPOINT_BASE}?action=products`;
-  const r = await fetch(url); if(!r.ok) throw new Error(r.status);
-  return r.json();
-}
-async function apiProduct(slug){
-  const url = `${GAS_ENDPOINT_BASE}?action=product&slug=${encodeURIComponent(slug)}`;
-  const r = await fetch(url); if(!r.ok) throw new Error(r.status);
-  return r.json();
-}
-async function apiStats(slug){
-  const url = `${GAS_ENDPOINT_BASE}?action=stats&slug=${encodeURIComponent(slug)}&uid=${encodeURIComponent(getUID())}`;
-  const r = await fetch(url); if(!r.ok) throw new Error(r.status);
-  return r.json();
-}
-async function apiVote(slug, dir, reason){
-  const url = `${GAS_ENDPOINT_BASE}?action=vote&slug=${encodeURIComponent(slug)}&uid=${encodeURIComponent(getUID())}&dir=${encodeURIComponent(dir)}&reason=${encodeURIComponent(reason||'')}`;
-  const r = await fetch(url); if(!r.ok) throw new Error(r.status);
-  return r.json();
+/* ===== MINI CSS (loader + micro animações, caso a página não tenha) ===== */
+(function ensureLoader(){
+  if(document.getElementById('pg-loading')) return;
+  const overlay=document.createElement('div'); overlay.id='pg-loading';
+  overlay.className='pg-loading';
+  overlay.innerHTML='<div class="pg-spinner"></div>';
+  const css = `
+    .pg-loading{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,12,32,.45);backdrop-filter:blur(2px);z-index:9999}
+    .pg-loading.open{display:flex}
+    .pg-spinner{width:42px;height:42px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:#7fb2ff;animation:pgspin 0.9s linear infinite}
+    @keyframes pgspin{to{transform:rotate(360deg)}}
+    .vote-btn.voted{outline:2px solid rgba(127,178,255,.6); box-shadow:0 0 0 3px rgba(127,178,255,.15) inset;}
+    .vote-btn:disabled{opacity:.6;cursor:not-allowed}
+    .shine-now{position:relative;overflow:hidden}
+    .shine-now::after{content:"";position:absolute;inset:0;transform:translateX(-120%);background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.12) 50%,transparent 100%);animation:sh 1.1s ease}
+    @keyframes sh{to{transform:translateX(120%)}}
+  `;
+  const style=document.createElement('style'); style.textContent=css;
+  document.head.appendChild(style);
+  document.body.appendChild(overlay);
+})();
+
+/* ===== ENDPOINTS GAS ===== */
+async function apiProducts(){ const r=await fetch(`${GAS_ENDPOINT_BASE}?action=products`); if(!r.ok) throw new Error(r.status); return r.json(); }
+async function apiProduct(slug){ const r=await fetch(`${GAS_ENDPOINT_BASE}?action=product&slug=${encodeURIComponent(slug)}`); if(!r.ok) throw new Error(r.status); return r.json(); }
+async function apiStats(slug){ const r=await fetch(`${GAS_ENDPOINT_BASE}?action=stats&slug=${encodeURIComponent(slug)}&uid=${encodeURIComponent(getUID())}`); if(!r.ok) throw new Error(r.status); return r.json(); }
+async function apiVote(slug,dir,reason){ const r=await fetch(`${GAS_ENDPOINT_BASE}?action=vote&slug=${encodeURIComponent(slug)}&uid=${encodeURIComponent(getUID())}&dir=${encodeURIComponent(dir)}&reason=${encodeURIComponent(reason||'')}`); if(!r.ok) throw new Error(r.status); return r.json(); }
+
+/* ===== PRODUTOS PADRÃO (garantia dos 3 originais) ===== */
+const DEFAULT_PRODUCTS = [
+  {
+    slug: "manual-do-aprovado",
+    title: "Manual do Aprovado",
+    subtitle: "O passo a passo definitivo para aprender a estudar do jeito certo e passar mais rápido.",
+    type: "produto",
+    price: "R$ 97,00",
+    sample: "https://drive.google.com/SEU-LINK-AMOSTRA-MANUAL",
+    checkout: "https://seu-checkout.com/manual",
+    copy: [
+      "Você já gastou horas, dias e até anos estudando para concursos, mas sente que não sai do lugar? Que parece estar sempre perdido, sem saber se o que está fazendo realmente funciona? A verdade é que a maioria dos concurseiros começa errado, pulando de método em método, estudando sem organização e perdendo tempo com coisas que não trazem resultado.",
+      "O Manual do Aprovado foi criado justamente para mudar essa realidade — por quem já passou por tudo isso e aprendeu na prática o que funciona de verdade para passar em concursos.",
+      "Aqui você vai receber um passo a passo claro, prático e testado, que mostra exatamente o que fazer desde o primeiro dia de estudo até a aprovação.",
+      "Você vai aprender a organizar seus estudos do jeito certo, com estratégias que aceleram o aprendizado e fazem você fixar o conteúdo com eficiência. Vai saber como revisar para não esquecer, como resolver questões para ganhar experiência e montar ciclos de estudo que otimizam seu tempo.",
+      "Esse manual é para quem quer parar de perder tempo fazendo errado e finalmente ir direto ao que gera resultado. É para quem quer estudar com foco, segurança e saber que está no caminho certo.",
+      "Ele foi feito por aprovados que passaram anos estudando errado, aprendendo na marra o que funciona e o que não funciona — e agora compartilham esse conhecimento com você, para que você não precise errar tanto quanto eles.",
+      "Se você quer sair do lugar, eliminar a dúvida e acelerar sua aprovação, este manual em PDF é seu guia definitivo. Estude menos, estude melhor e conquiste sua vaga mais rápido!"
+    ]
+  },
+  {
+    slug: "legislacao-interna-tjsp-2025",
+    title: "Legislação Interna TJ-SP 2025",
+    subtitle: "Simplifique o estudo da legislação com um conteúdo direto, tabelado e com questões inéditas",
+    type: "produto",
+    price: "R$ 79,00",
+    sample: "https://drive.google.com/SEU-LINK-AMOSTRA-LEGISLACAO",
+    checkout: "https://seu-checkout.com/legislacao",
+    copy: [
+      "Se preparar para o concurso do Tribunal de Justiça de São Paulo exige muito mais do que decorar a lei seca: é preciso conhecer profundamente a legislação interna, os prazos, as competências, e os detalhes que caem com frequência nas provas.",
+      "Pensando nisso, desenvolvemos o material Legislação Interna TJ-SP 2025, em formato PDF, organizado e visualmente acessível que reúne toda a legislação cobrada no edital de forma didática e prática.",
+      "Aqui, você não vai perder tempo vasculhando textos longos e difíceis de entender: preparamos tabelas explicativas que destacam exatamente o que você precisa saber — prazos, quóruns, composições e competências — tudo organizado para facilitar seu aprendizado e memorização.",
+      "Além disso, incluímos questões inéditas que foram cuidadosamente selecionadas para testar seu conhecimento e garantir que você esteja preparado para os tipos de perguntas que vão aparecer na prova.",
+      "Este material é essencial para você que quer acertar o máximo em Legislação. Estude com foco, domine o que realmente cai no edital e aumente suas chances de aprovação."
+    ]
+  },
+  {
+    slug: "mentoria",
+    title: "Mentoria",
+    subtitle: "Mentoria personalizada para planejar e acelerar sua aprovação.",
+    type: "mentoria",
+    price: "",
+    sample: "",
+    checkout: "",
+    copy: [
+      "Conseguir a aprovação em concursos públicos é um desafio que exige muito mais do que vontade: é preciso planejamento estratégico, organização, disciplina e acompanhamento correto — e é exatamente isso que nossa Mentoria oferece.",
+      "Na Mentoria, você recebe um plano de estudos totalmente individualizado, elaborado especificamente para o seu perfil, considerando seu tempo disponível, o concurso que você pretende prestar, seu nível atual em cada matéria e o peso das disciplinas no edital.",
+      "O plano é acessado por uma plataforma, onde suas metas diárias são divididas em teoria, revisão e resolução de questões.",
+      "Mas não para por aí: você terá suporte direto e pessoal comigo, seu mentor, via WhatsApp. Pode tirar dúvidas, pedir orientações e receber feedback sempre que precisar, 7 dias por semana.",
+      "Oferecemos a mentoria com duas opções: com material completo do Estratégia Concursos; ou apenas o plano e o acompanhamento.",
+      "Fazemos uma reunião inicial para entender suas necessidades e objetivos, garantindo que seu plano seja realmente personalizado.",
+      "Se você quer deixar de estudar sem rumo, a Mentoria é sua solução para acelerar sua preparação com foco e estratégia."
+    ]
+  }
+];
+
+/* ===== MERGE: planilha sobrescreve/soma aos padrões ===== */
+function mergeCatalog(defaults, remoteList){
+  const map = new Map();
+  defaults.forEach(p=> map.set(p.slug, {...p}));
+  (remoteList||[]).forEach(r=>{
+    const current = map.get(r.slug) || {};
+    // se vier do GAS um produto, preenche/override campos
+    map.set(r.slug, {
+      ...current,
+      slug: r.slug || current.slug,
+      title: r.title || current.title,
+      subtitle: r.subtitle || current.subtitle,
+      type: r.type || current.type || 'produto',
+      price: (r.price!==undefined ? r.price : current.price) || '',
+      sample: (r.sample!==undefined ? r.sample : current.sample) || '',
+      checkout: (r.checkout!==undefined ? r.checkout : current.checkout) || '',
+      copy: current.copy // copy detalhada: vem do endpoint /product
+    });
+    // anexar contadores (se o GAS devolveu)
+    if(r.up!=null || r.down!=null){
+      map.get(r.slug).votes = {up: fmt(r.up||0), down: fmt(r.down||0)};
+    }
+  });
+  return Array.from(map.values());
 }
 
 /* ===== HOME ===== */
@@ -65,18 +135,24 @@ async function renderHome(){
   if(!list) return;
 
   showLoading();
-  let data=null;
-  try{ data = await apiProducts(); }
-  catch(e){ console.warn(e); hideLoading(); list.innerHTML = `<div class="text-blue-100/80">Não foi possível carregar os produtos agora.</div>`; return; }
-  finally{ hideLoading(); }
+  let data=null, items=[];
+  try{
+    // tenta carregar da planilha
+    data = await apiProducts();
+    items = mergeCatalog(DEFAULT_PRODUCTS, data.items);
+  }catch(e){
+    console.warn('Falha ao carregar do GAS, usando apenas default:', e);
+    items = DEFAULT_PRODUCTS;
+  }finally{
+    hideLoading();
+  }
 
-  const items = (data.items||[]);
-  if(!items.length){ list.innerHTML = `<div class="text-blue-100/80">Sem produtos ativos no momento.</div>`; return; }
+  if(!items.length){ list.innerHTML = `<div class="text-blue-100/80">Sem produtos no momento.</div>`; return; }
 
   list.innerHTML = items.map(p=>{
     const href = `produto.html?p=${encodeURIComponent(p.slug)}`;
     return `
-    <a class="home-card hover:scale-[1.01] transition" href="${href}">
+    <a class="home-card hover:scale-[1.01] transition" href="${href}" data-type="${p.type||'produto'}">
       <div class="home-card-title">${p.title}</div>
       <div class="home-card-sub">${p.subtitle}</div>
     </a>`;
@@ -137,11 +213,22 @@ async function renderProduct(){
   if(wa) wa.href = WA_LINK;
 
   showLoading();
-  let p=null;
-  try{ p = await apiProduct(slug); }
-  catch(e){ console.warn(e); hideLoading(); root.innerHTML=`<div class="text-blue-50/90">Não foi possível carregar o produto agora.</div>`; return; }
 
-  if(p && p.error){ hideLoading(); root.innerHTML=`<div class="text-blue-50/90">Produto não encontrado. <a class="underline" href="index.html">Voltar</a></div>`; return; }
+  // tentamos buscar do GAS (que já devolve copy agregada e contagem); se falhar, cai no default
+  let p=null;
+  try{
+    p = await apiProduct(slug);
+    if(p && p.error){ throw new Error('not found in GAS'); }
+  }catch(e){
+    // fallback: pegar do default + contagem separada
+    const local = DEFAULT_PRODUCTS.find(x=>x.slug===slug);
+    if(!local){ hideLoading(); root.innerHTML=`<div class="text-blue-50/90">Produto não encontrado. <a class="underline" href="index.html">Voltar</a></div>`; return; }
+    p = {...local};
+    try{
+      const st = await apiStats(slug);
+      p.votes = {up:st.up||0, down:st.down||0};
+    }catch(_){}
+  }
 
   const head=`
   <div class="glass-panel panel-gradient">
@@ -153,7 +240,8 @@ async function renderProduct(){
     </div>
   </div>`;
 
-  const copyHtml=(p.copy||[]).map(t=>`<p>${t}</p>`).join('');
+  const copyArray = Array.isArray(p.copy) ? p.copy : [];
+  const copyHtml= copyArray.map(t=>`<p>${t}</p>`).join('');
   const priceHtml=p.price?`<div class="product-price">Preço: <span>${p.price}</span></div>`:'';
 
   const sampleBtn = p.sample
